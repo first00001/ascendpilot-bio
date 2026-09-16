@@ -35,7 +35,7 @@ AscendC 与 Triton 两次运行除算子实现外必须保持数据、随机种�
 
 ```bash
 ssh -N -L 8000:127.0.0.1:8000 \
-  -J 'JUMP_TOKEN@113.47.8.48:2234' root@199.93.56.238
+  -J 'JUMP_USER:JUMP_TOKEN@JUMP_HOST:JUMP_PORT' root@TARGET_HOST
 export PLANTCELL_API_TOKEN='<与目标机 /etc/qwen35.env 相同的 Token>'
 python demo.py
 python benchmark.py --mode ricefm --runs 20 --warmup 2
@@ -73,4 +73,6 @@ ZH11 表达矩阵来自公司集群。未经数据所有者书面授权，不得
 
 ## PR 链接
 
-当前代码尚未推送到用户指定的代码仓库，因此不能填写真实 PR 地址。提交前请将本节替换为实际仓库和 PR URL；不得使用虚构链接。
+- 项目仓库：<https://github.com/first00001/ascendpilot-bio>
+- MindSpeed-MM PR：<https://github.com/Ascend/MindSpeed-MM/pull/8>
+- PR 分支：`first00001:qwen35-08b-ascendc-gloo`

@@ -1,25 +1,59 @@
-# 5 分钟演示流程
+# 5 分钟复赛演示流程
 
-## 0:00-0:45 自动迁移 Skill
+## 演示原则
 
-先展示 `qwen35-ascend-migration/SKILL.md` 和迁移报告：环境检查、FP32/FP16 候选测试、12 GB 显存约束下自动选择 FP16、服务安装与验收。强调 PlantCell 是迁移后的验证场景。
+官方赛题主线是 Qwen3.5-0.8B 在 MindSpeed-MM/FSDP 上的双 NPU 训练与 AscendC/Triton 对比。PlantCell、Qwen3.5-4B 和 riceFM/ZH11 是迁移能力的扩展验证，不能替代官方主线。现场优先展示已保存的正式结果，不重新跑完整 100 step。
 
-## 0:45-1:30 ZH11 图谱
+## 0:00-0:30 项目定位
 
-在 UMAP 上移动鼠标展示一级/二级细胞类型、组织和时期。说明 5,188 个评测细胞中 3,358 个有可用 UMAP 坐标，页面确定性抽样显示，缺失坐标不会被伪造。
+打开项目 README，用一句话说明：项目完成 Qwen3.5-0.8B 双 NPU 训练迁移、AscendC/Triton 同条件 A/B 验证，以及面向植物单细胞分析的可信 Agent 扩展。展示项目仓库和 MindSpeed-MM PR #8。
 
-## 1:30-2:35 riceFM 真实注释
+## 0:30-1:30 官方训练闭环
 
-选择 `Pollen / S11`，点击“运行注释”。说明输入来自真实 ZH11 单细胞的 512 个最高表达非零基因；展示 256 维 embedding、预测标签、置信度和最近参考细胞。切换 Ovary 或 Tapetum 再运行一次。
+展示两份正式训练日志末尾的第 100 step 和 `iter_0000100` 保存记录。说明两次实验都使用 2 x Ascend 910、global batch size 8、相同数据、随机种子、步数和训练超参数，唯一主要变量是 AscendC 或 Triton 算子实现。
 
-## 2:35-3:30 Qwen 科研报告
+建议打开：
 
-使用默认问题生成分析。强调 Qwen 只解释已提供的 Accuracy、Macro-F1、吞吐和限制，不生成未计算的 marker、差异基因或通路。
+- `results/qwen35-formal-dual/logs/ascendc_formal_dual_gloo/train_20260915_103446.log`
+- `results/qwen35-formal-dual/logs/triton_formal_dual_gloo/train_20260915_104105.log`
+- `results/qwen35-formal-dual/results/formal_dual_gloo_checkpoint_files.txt`
 
-## 3:30-4:25 精度与性能
+## 1:30-2:30 性能和精度对齐
 
-展示精度报告中的 Accuracy 0.6464、Macro-F1 0.6449，以及错误类型。展示性能报告：riceFM 全量 206.45 cells/s；热态单细胞接口 P95 9.98 ms；Qwen 64-token P95 3.247 s、19.86 tok/s。
+展示 `formal_dual_gloo_100_comparison.json`：step 1-100 中 AscendC 为 2.716775 samples/s，Triton 为 2.341653 samples/s，全流程吞吐高 16.02%。两条 loss 序列平均绝对差 0.000884，最大差 0.002954，第 100 step 差 0.000212。
 
-## 4:25-5:00 创新点与边界
+随后主动展示稳态结果：step 11-100 中 AscendC 为 4.036069 samples/s，Triton 为 6.898838 samples/s，AscendC 低 41.50%。结论只能表述为“全流程窗口包含初始化与编译成本时 AscendC 占优，但本次稳态吞吐未占优”，不能宣称普遍加速。最终精度是否通过以赛事验收阈值或脚本为准。
 
-总结“自动迁移闭环 + 实测约束选型 + 科研证据约束 + 双 NPU 专业场景”。明确 FP16 的价值是显存降低 49.14%，当前短文本速度没有提升；ZH11 结果是参考迁移评测，不是独立外部验证。
+## 2:30-3:05 工程修复和贡献
+
+打开 MindSpeed-MM PR #8，展示仅有 1 个提交。说明在 HCCL 双 NPU 训练中，DCP 元数据规划需要 CPU Gloo process group；补丁解决同步 checkpoint load/save 的进程组兼容问题，两条正式训练均成功保存第 100 step checkpoint。
+
+## 3:05-4:20 PlantCell 扩展演示
+
+打开 `http://127.0.0.1:8000/demo`，确认顶部显示服务正常。依次完成：
+
+1. 在 ZH11 UMAP 上悬停一个点，说明仅显示有坐标的细胞，缺失坐标不伪造。
+2. 选择一个预置细胞并点击“运行注释”，展示 riceFM 标签、置信度和最近参考细胞。
+3. 点击“生成分析”，展示 Qwen Planner、Evidence Store 和 Verifier；强调缺少证据时返回 `input_required`，不会编造 marker、差异基因或通路。
+
+这一段只演示一次注释和一次问答，不在现场跑多轮 benchmark。
+
+## 4:20-5:00 总结和边界
+
+总结三点：官方 0.8B 双 NPU 训练完成；DCP/Gloo 修复形成上游 PR；扩展场景验证了迁移、部署和证据约束闭环。明确 ZH11 原始数据受授权限制，仓库不包含原始矩阵、逐细胞预测、模型权重或 checkpoint 分片。
+
+## 现场准备
+
+- 提前开启 SSH 隧道并访问 `/health`、`/version` 和 `/demo`。
+- API Token 只在本机输入，不出现在幻灯片、终端历史或录屏中。
+- 提前打开 README、PR #8、两份比较 JSON、两份日志末尾和演示页面，按顺序放在浏览器标签页中。
+- 关闭聊天软件通知，终端字体调大，浏览器缩放保持 100%。
+- 不要现场重跑完整 100 step；若必须展示实时执行，只运行 3-5 step 的独立 smoke test，并明确它不是正式性能结果。
+
+## 断网兜底
+
+网络或服务器不可用时，按相同顺序展示本地 README、正式 JSON、日志末尾、checkpoint 文件清单和报告 PDF。不要用静态结果冒充现场运行；直接说明这是 2026 年 9 月 15 日保存的正式双 NPU 实验记录，并展示对应哈希和原始日志。
+
+## 建议口播结论
+
+“我们完成的不是单一页面演示，而是一条可审计的迁移闭环：Qwen3.5-0.8B 在双 Ascend NPU 上完成 100 step AscendC/Triton 对照训练，两次都保存了 checkpoint；我们如实报告全流程与稳态窗口的不同结论，并把 DCP/Gloo 兼容修复提交为 MindSpeed-MM PR。PlantCell 是这条迁移能力在科研场景中的扩展验证。”
