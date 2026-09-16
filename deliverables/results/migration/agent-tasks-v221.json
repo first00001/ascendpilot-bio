@@ -1,0 +1,120 @@
+{
+  "tasks": 5,
+  "successful_tasks": 5,
+  "task_completion_rate": 1.0,
+  "mean_seconds": 9.168548933789134,
+  "failures": 0,
+  "rows": [
+    {
+      "task": "解释 ZH11 标签迁移结果的可信度和限制",
+      "seconds": 11.81502055004239,
+      "valid": true,
+      "status": "completed",
+      "tools": [
+        "zh11_metrics"
+      ],
+      "planner": "qwen_json_validated",
+      "verification": {
+        "passed": true,
+        "issues": [],
+        "cited_evidence": [
+          "E2"
+        ],
+        "available_evidence": [
+          "E0",
+          "E2"
+        ],
+        "rewrite_attempted": false
+      }
+    },
+    {
+      "task": "总结当前 Qwen 在昇腾上的性能证据",
+      "seconds": 10.766033979132771,
+      "valid": true,
+      "status": "completed",
+      "tools": [
+        "qwen_report"
+      ],
+      "planner": "qwen_json_validated",
+      "verification": {
+        "passed": true,
+        "issues": [],
+        "cited_evidence": [
+          "E2"
+        ],
+        "available_evidence": [
+          "E0",
+          "E2"
+        ],
+        "rewrite_attempted": false
+      }
+    },
+    {
+      "task": "对这个表达矩阵执行细胞类型注释",
+      "seconds": 4.209480339661241,
+      "valid": true,
+      "status": "input_required",
+      "tools": [
+        "zh11_metrics",
+        "qwen_report"
+      ],
+      "planner": "deterministic_fallback",
+      "verification": {
+        "passed": true,
+        "issues": [],
+        "cited_evidence": [
+          "E0"
+        ],
+        "available_evidence": [
+          "E0"
+        ],
+        "rewrite_attempted": false
+      }
+    },
+    {
+      "task": "生成一段不超过 100 字的评测结论",
+      "seconds": 11.547505889087915,
+      "valid": true,
+      "status": "completed",
+      "tools": [
+        "qwen_report"
+      ],
+      "planner": "qwen_json_validated",
+      "verification": {
+        "passed": true,
+        "issues": [],
+        "cited_evidence": [
+          "E2"
+        ],
+        "available_evidence": [
+          "E0",
+          "E2"
+        ],
+        "rewrite_attempted": true
+      }
+    },
+    {
+      "task": "说明为什么不能把当前结果称为独立外部验证",
+      "seconds": 7.504703911021352,
+      "valid": true,
+      "status": "completed",
+      "tools": [
+        "zh11_metrics",
+        "qwen_report"
+      ],
+      "planner": "deterministic_fallback",
+      "verification": {
+        "passed": true,
+        "issues": [],
+        "cited_evidence": [
+          "E2"
+        ],
+        "available_evidence": [
+          "E0",
+          "E2"
+        ],
+        "rewrite_attempted": false
+      }
+    }
+  ]
+}

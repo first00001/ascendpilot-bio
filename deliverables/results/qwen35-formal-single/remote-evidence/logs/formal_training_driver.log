@@ -1,0 +1,757 @@
+W0915 08:55:35.432000 30495 torch/distributed/run.py:766] 
+W0915 08:55:35.432000 30495 torch/distributed/run.py:766] *****************************************
+W0915 08:55:35.432000 30495 torch/distributed/run.py:766] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0915 08:55:35.432000 30495 torch/distributed/run.py:766] *****************************************
+[INFO] Starting configuration loading...
+[INFO] Loaded configuration file: /opt/qwen35_08b/qwen3_5_0.8B_ascendc_formal.yaml
+[WARNING] Field 'preprocess_parameters' exists but is not a BaseArguments subclass: typing.Optional[mindspeed_mm.fsdp.data.data_utils.func_utils.model_args.ProcessorArguments]
+[INFO] Automatically registered YAML field: data.dataset_param.preprocess_parameters.model_name_or_path (type: <class 'str'>, value: /workspace/shared_assets/HC2026/helloworld/model/Qwen3.5-0.8B)
+[WARNING] Field 'preprocess_parameters' exists but is not a BaseArguments subclass: typing.Optional[mindspeed_mm.fsdp.data.data_utils.func_utils.model_args.ProcessorArguments]
+[INFO] Automatically registered YAML field: data.dataset_param.preprocess_parameters.use_fast_tokenizer (type: <class 'bool'>, value: True)
+[WARNING] Field 'preprocess_parameters' exists but is not a BaseArguments subclass: typing.Optional[mindspeed_mm.fsdp.data.data_utils.func_utils.model_args.ProcessorArguments]
+[INFO] Automatically registered YAML field: data.dataset_param.preprocess_parameters.split_special_tokens (type: <class 'bool'>, value: False)
+[WARNING] Field 'preprocess_parameters' exists but is not a BaseArguments subclass: typing.Optional[mindspeed_mm.fsdp.data.data_utils.func_utils.model_args.ProcessorArguments]
+[INFO] Automatically registered YAML field: data.dataset_param.preprocess_parameters.image_max_pixels (type: <class 'int'>, value: 262144)
+[WARNING] Field 'preprocess_parameters' exists but is not a BaseArguments subclass: typing.Optional[mindspeed_mm.fsdp.data.data_utils.func_utils.model_args.ProcessorArguments]
+[INFO] Automatically registered YAML field: data.dataset_param.preprocess_parameters.image_min_pixels (type: <class 'int'>, value: 1024)
+[WARNING] Field 'preprocess_parameters' exists but is not a BaseArguments subclass: typing.Optional[mindspeed_mm.fsdp.data.data_utils.func_utils.model_args.ProcessorArguments]
+[INFO] Automatically registered YAML field: data.dataset_param.preprocess_parameters.video_max_pixels (type: <class 'int'>, value: 16384)
+[WARNING] Field 'preprocess_parameters' exists but is not a BaseArguments subclass: typing.Optional[mindspeed_mm.fsdp.data.data_utils.func_utils.model_args.ProcessorArguments]
+[INFO] Automatically registered YAML field: data.dataset_param.preprocess_parameters.video_min_pixels (type: <class 'int'>, value: 0)
+[WARNING] Field 'preprocess_parameters' exists but is not a BaseArguments subclass: typing.Optional[mindspeed_mm.fsdp.data.data_utils.func_utils.model_args.ProcessorArguments]
+[INFO] Automatically registered YAML field: data.dataset_param.preprocess_parameters.video_fps (type: <class 'float'>, value: 2.0)
+[WARNING] Field 'preprocess_parameters' exists but is not a BaseArguments subclass: typing.Optional[mindspeed_mm.fsdp.data.data_utils.func_utils.model_args.ProcessorArguments]
+[INFO] Automatically registered YAML field: data.dataset_param.preprocess_parameters.video_maxlen (type: <class 'int'>, value: 64)
+[INFO] Automatically registered YAML field: model.gdn_implementation (type: <class 'str'>, value: ascendc)
+[INFO] Automatically registered YAML field: model.causal_conv1d_implementation (type: <class 'str'>, value: triton)
+[INFO] Automatically registered YAML field: model.skip_gdn_recompute (type: <class 'bool'>, value: True)
+[INFO] Automatically registered YAML field: model.skip_flash_attn_recompute (type: <class 'bool'>, value: True)
+[INFO] Automatically registered YAML field: features.recompute (type: <class 'bool'>, value: True)
+============================================================
+BaseArguments Configuration Manager Summary
+============================================================
+
+Configuration class: Arguments
+Configuration file: /opt/qwen35_08b/qwen3_5_0.8B_ascendc_formal.yaml
+Allow YAML extensions: True
+Allow CLI override: True
+Strict CLI validation: True
+Allow registering YAML fields: True
+
+Defined field count: 203
+Dynamic field count: 14
+Total field count: 217
+
+
+============ Configuration Details ============
+parallel:
+  data_parallel_size: 2
+  fully_shard_parallel_size: 2
+  fsdp_plan:
+    ignored_modules: []
+    apply_modules: ['model.visual', 'model.visual.blocks.{*}', 'model.language_model.embed_tokens', 'model.language_model', 'model.language_model.layers.{*}', 'lm_head', 'mtp']
+    param_dtype: bf16
+    reduce_dtype: fp32
+    output_dtype: None
+    cast_forward_inputs: True
+    reshard_after_forward: True
+    num_to_forward_prefetch: 1
+    num_to_backward_prefetch: 1
+    pregather: False
+    hook_modules: None
+    cpu_offload: False
+  tensor_parallel_size: 1
+  tp_plan:
+    colwise_parallel: []
+    rowwise_parallel: []
+    sequence_parallel: []
+  ring_attention_size: 1
+  ulysses_parallel_size: 1
+  expert_parallel_size: 1
+  expert_fully_shard_parallel_size: 2
+  ep_plan:
+    apply_modules: []
+    use_npu_fused_ops: True
+    dispatcher: alltoall
+    apply_efsdp_modules: []
+  recompute: False
+  recompute_plan:
+    apply_modules: []
+    use_reentrant: False
+  local_rank: 0
+  global_rank: 0
+  world_size: 2
+model:
+  model_id: qwen3_5
+  model_name_or_path: /workspace/shared_assets/HC2026/helloworld/model/Qwen3.5-0.8B
+  trust_remote_code: True
+  attn_implementation: flash_attention_2
+  freeze: ['model.visual']
+  mtp_num_layers: 0
+  mtp_loss_scaling_factor: 0.1
+  gdn_implementation: ascendc
+  causal_conv1d_implementation: triton
+  skip_gdn_recompute: True
+  skip_flash_attn_recompute: True
+data:
+  dataset_param:
+    dataset_type: huggingface
+    basic_parameters:
+      cache_dir: /opt/qwen35_08b/cache
+      template: qwen3_vl_nothink
+      chat_template: None
+      enable_thinking: False
+      dataset_dir: /opt/qwen35_08b/data/coco
+      dataset: ['/opt/qwen35_08b/data/output_llava_coco_data.json']
+      cutoff_len: 1024
+      train_on_prompt: False
+      mask_history: False
+      streaming: False
+      overwrite_cache: False
+      preprocessing_batch_size: 1000
+      preprocessing_num_workers: 16
+      max_samples: None
+      tool_format: None
+      val_dataset: None
+      val_max_samples: None
+      val_rate: None
+      packing: None
+      neat_packing: False
+      preprocess_on_fly: True
+      async_preprocess: False
+      async_preprocess_buffer_size: None
+      stage: sft
+    preprocess_parameters:
+      model_name_or_path: /workspace/shared_assets/HC2026/helloworld/model/Qwen3.5-0.8B
+      use_fast_tokenizer: True
+      split_special_tokens: False
+      image_resolution: 512
+      video_resolution: 128
+      image_max_pixels: 262144
+      image_min_pixels: 1024
+      video_max_pixels: 16384
+      video_min_pixels: 0
+      video_fps: 2.0
+      video_maxlen: 64
+      image_do_pan_and_scan: False
+      crop_to_patches: False
+      use_audio_in_video: False
+      audio_sampling_rate: 16000
+      trust_remote_code: False
+    attr:
+      ranking: False
+      system: None
+      images: images
+      videos: None
+      audios: None
+      prompt: None
+      query: None
+      response: None
+      history: None
+      messages: messages
+      tools: None
+      role_tag: role
+      content_tag: content
+      user_tag: user
+      assistant_tag: assistant
+      observation_tag: observation
+      function_tag: function_call
+      system_tag: system
+      chosen: None
+      rejected: None
+      formatting: sharegpt
+  val_dataset_param: None
+  dataloader_param:
+    dataloader_mode: sampler
+    sampler_type: BaseRandomBatchSampler
+    shuffle: False
+    drop_last: True
+    pin_memory: True
+    collate_param:
+      collator_id: None
+      model_name: qwen3vl
+      ignore_pad_token_for_loss: True
+      pad_to_multiple_of: 8
+    num_workers: 8
+    enable_preload: False
+training:
+  profile:
+    enable: False
+    start_step: 1
+    end_step: 2
+    save_path: ./profiling
+    record_shapes: True
+    with_memory: True
+    with_stack: True
+    ranks: [0]
+    _train_steps: -1
+    local_rank: 0
+    global_rank: 0
+    world_size: 2
+    profile_this_rank: False
+  lora:
+    enable: False
+    rank: 8
+    alpha: 16
+    target_modules: ['q_proj', 'k_proj', 'v_proj']
+    dropout: 0.0
+    init_lora_weights: True
+    pretrained_lora_path: None
+    lora_target_modules_support: None
+  lr: 1e-05
+  lr_min: 0.0
+  lr_start: 0.0
+  weight_decay: 0.0
+  no_decay_modules: []
+  no_decay_params: []
+  optimizer: adamw
+  matched_adamw_rms: 0.2
+  muon_momentum: 0.95
+  ns_steps: 5
+  adam_fused: True
+  adam_beta1: 0.9
+  adam_beta2: 0.999
+  adam_eps: 1e-08
+  clip_grad: 0.0
+  clip_grad_foreach: True
+  micro_batch_size: 4
+  gradient_accumulation_steps: 1
+  lr_warmup_ratio: 0.1
+  lr_decay_style: cosine
+  lr_decay_ratio: 1.0
+  enable_full_determinism: False
+  ckpt_manager: dcp
+  save_async: False
+  load_checkpoint_path: None
+  save_steps: 0
+  seed: 42
+  max_steps: None
+  init_model_with_meta_device: True
+  train_iters: 100
+  train_epochs: None
+  load: /opt/qwen35_08b/dcp
+  load_format: auto
+  load_strict: False
+  load_rank0_and_broadcast: False
+  no_load_optim: True
+  no_load_rng: True
+  save: /opt/qwen35_08b/save_ascendc_formal
+  no_save_optim: True
+  no_save_rng: True
+  log_interval: 1
+  save_interval: 100
+  val_interval: 0
+  val_micro_batch_size: None
+  use_deter_comp: False
+  allow_hf32: None
+  plugin: ['mindspeed_mm/fsdp/models/qwen3_5', 'mindspeed_mm/fsdp/data/datasets/huggingface']
+  lr_scaling_plan: None
+  quantization_plan: QuantizeConfig(recipe_name=None, apply_modules=[], ignored_modules=[], quant_converters=[], extra_args={}, enable_fsdp_low_precision_all_gather=True, fsdp_low_precision_all_gather_mode='on-demand')
+  _train_steps: -1
+  local_rank: 0
+  global_rank: 0
+  world_size: 2
+  global_batch_size: 8
+tools:
+  profile:
+    enable: False
+    profile_type: static
+    ranks: [0]
+    static_param:
+      level: level1
+      with_stack: False
+      with_memory: False
+      record_shapes: False
+      with_cpu: True
+      save_path: /opt/qwen35_08b/profiling
+      start_step: 10
+      end_step: 11
+      data_simplification: False
+      aic_metrics_type: PipeUtilization
+      analyse_flag: True
+  memory_profile:
+    enable: False
+    start_step: 1
+    end_step: 2
+    save_path: /opt/qwen35_08b/memory_snapshot
+    dump_ranks: [0]
+    stacks: all
+    max_entries: None
+    mem_info: False
+features:
+  recompute_plan:
+    apply_modules: ['model.visual.blocks.{*}', 'model.language_model.layers.{*}']
+    use_reentrant: False
+  loss_cfg:
+    loss_type: default
+    router_aux_loss_coef: 0.0
+    router_aux_loss_offload: False
+  enable_chunk_loss: True
+  enable_dynamic_chunk_loss: False
+  chunkloss_plan:
+    apply_module: lm_head
+    chunk_size: 1024
+    total_chunk_size: 4096
+  enable_activation_offload: True
+  activation_offload_plan:
+    apply_modules: ['model.visual.blocks.{*}', 'model.language_model.layers.{*}']
+  enable_chunk_mbs: False
+  chunkmbs_plan:
+    apply_modules: ['model.language_model.layers.{*}']
+    chunk_mbs: 2
+    batch_dim: 0
+    chunk_arg_indexs: [0]
+    chunk_kwarg_names: ['position_embeddings', 'position_ids', 'rope_deltas', 'attention_mask']
+  enable_ep_balance: False
+  ep_balance_plan:
+    max_dup_experts_num: 2
+  recompute: True
+data.dataset_param.preprocess_parameters.model_name_or_path: /workspace/shared_assets/HC2026/helloworld/model/Qwen3.5-0.8B
+data.dataset_param.preprocess_parameters.use_fast_tokenizer: True
+data.dataset_param.preprocess_parameters.split_special_tokens: False
+data.dataset_param.preprocess_parameters.image_max_pixels: 262144
+data.dataset_param.preprocess_parameters.image_min_pixels: 1024
+data.dataset_param.preprocess_parameters.video_max_pixels: 16384
+data.dataset_param.preprocess_parameters.video_min_pixels: 0
+data.dataset_param.preprocess_parameters.video_fps: 2.0
+data.dataset_param.preprocess_parameters.video_maxlen: 64
+
+
+============ Dynamic Fields ============
+ data.dataset_param.preprocess_parameters.image_max_pixels
+ data.dataset_param.preprocess_parameters.image_min_pixels
+ data.dataset_param.preprocess_parameters.model_name_or_path
+ data.dataset_param.preprocess_parameters.split_special_tokens
+ data.dataset_param.preprocess_parameters.use_fast_tokenizer
+ data.dataset_param.preprocess_parameters.video_fps
+ data.dataset_param.preprocess_parameters.video_max_pixels
+ data.dataset_param.preprocess_parameters.video_maxlen
+ data.dataset_param.preprocess_parameters.video_min_pixels
+ features.recompute
+ model.causal_conv1d_implementation
+ model.gdn_implementation
+ model.skip_flash_attn_recompute
+ model.skip_gdn_recompute
+============================================================
+Successfully imported: mindspeed_mm.fsdp.models.qwen3_5
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:44,915 INFO [torch_npu.env:15] => get env TRITON_CACHE_DIR = /opt/qwen35_08b/triton_cache_ascendc_formal
+[Rank 1 | Local Rank 1] 2026-09-15 08:55:44,933 INFO [torch_npu.env:15] => get env TRITON_CACHE_DIR = /opt/qwen35_08b/triton_cache_ascendc_formal
+Successfully imported: mindspeed_mm.fsdp.data.datasets.huggingface
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:45,984 INFO [torch_npu.env:15] => get env USE_TF = FALSE
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:45,985 INFO [datasets:114] => Disabling Tensorflow because USE_TORCH is set
+[Rank 1 | Local Rank 1] 2026-09-15 08:55:46,009 INFO [torch_npu.env:15] => get env USE_TF = FALSE
+[Rank 1 | Local Rank 1] 2026-09-15 08:55:46,010 INFO [datasets:114] => Disabling Tensorflow because USE_TORCH is set
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,238 INFO [torch_npu.env:15] => get env MASTER_ADDR = localhost
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,238 INFO [torch_npu.env:15] => get env MASTER_PORT = 6024
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,239 INFO [torch_npu.env:15] => get env TORCHELASTIC_USE_AGENT_STORE = True
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,247 INFO [mindspeed_mm.fsdp.distributed.parallel_state:87] => Parallel state initialized:
+ [dp] = True | Group size: 2 | device mesh:DeviceMesh('npu', [0, 1], mesh_dim_names=('dp',)) 
+[cp] = False | Group size: 1 | device mesh:DeviceMesh('npu', [0], mesh_dim_names=('cp',)) 
+[ulysses] = False | Group size: 1 | device mesh:DeviceMesh('npu', [0], mesh_dim_names=('ulysses',)) 
+[ring] = False | Group size: 1 | device mesh:DeviceMesh('npu', [0], mesh_dim_names=('ring',)) 
+[tp] = False | Group size: 1 | device mesh:DeviceMesh('npu', [0], mesh_dim_names=('tp',)) 
+[edp] = False | Group size: 1 | device mesh:DeviceMesh('npu', [0], mesh_dim_names=('edp',)) 
+[efsdp] = True | Group size: 2 | device mesh:DeviceMesh('npu', [0, 1], mesh_dim_names=('efsdp',)) 
+[ep] = False | Group size: 1 | device mesh:DeviceMesh('npu', [0], mesh_dim_names=('ep',)) 
+[fsdp] = True | Group size: 2 | device mesh:DeviceMesh('npu', [0, 1], mesh_dim_names=('dp_shard_cp',)) 
+
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,247 INFO [mindspeed_mm.fsdp.models.modelhub:48] => > Loading AutoConfig from /workspace/shared_assets/HC2026/helloworld/model/Qwen3.5-0.8B...
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,266 INFO [mindspeed_mm.fsdp.models.modelhub:48] => Building transformers model from configuration...
+[Rank 1 | Local Rank 1] 2026-09-15 08:55:46,272 INFO [torch_npu.env:15] => get env MASTER_ADDR = localhost
+[Rank 1 | Local Rank 1] 2026-09-15 08:55:46,273 INFO [torch_npu.env:15] => get env MASTER_PORT = 6024
+[Rank 1 | Local Rank 1] 2026-09-15 08:55:46,273 INFO [torch_npu.env:15] => get env TORCHELASTIC_USE_AGENT_STORE = True
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,322 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,354 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,354 WARNING [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:327] => The fast path is not available because one of the required library is not installed. Falling back to torch implementation.
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,355 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,356 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,357 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,357 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,360 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,360 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,361 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,361 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,363 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,363 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,366 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,366 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,367 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,367 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,369 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,369 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,372 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,372 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,373 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,374 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,375 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,375 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,378 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,378 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,379 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,379 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,381 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,381 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,384 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,384 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,385 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,385 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,387 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5 causal_conv1d (with transpose) use NPU triton ops
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,387 INFO [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:48] => Qwen3_5GatedDeltaNet (without transpose) use NPU AscendC fused ops
+[Rank 1 | Local Rank 1] 2026-09-15 08:55:46,388 WARNING [mindspeed_mm.fsdp.models.qwen3_5.modeling_qwen3_5:327] => The fast path is not available because one of the required library is not installed. Falling back to torch implementation.
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,478 INFO [mindspeed_mm.fsdp.models.modelhub:48] => freezing module model.visual...
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,499 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.0
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,499 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.1
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,499 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.2
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,499 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.3
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,499 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.4
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,499 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.5
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,499 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.6
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,499 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.7
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,499 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.8
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,500 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.9
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,500 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.10
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,500 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.visual.blocks.11
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,500 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.0
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,500 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.1
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.2
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.3
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.4
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.5
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.6
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.7
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.8
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.9
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.10
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.11
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.12
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.13
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.14
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.15
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.16
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.17
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,503 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.18
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.19
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.20
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.21
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.22
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.recompute:48] => Applying recompute to module: model.language_model.layers.23
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.0, offload idx: 0, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.1, offload idx: 1, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.2, offload idx: 2, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.3, offload idx: 3, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.4, offload idx: 4, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.5, offload idx: 5, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.6, offload idx: 6, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.7, offload idx: 7, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.8, offload idx: 8, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.9, offload idx: 9, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.10, offload idx: 10, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.visual.blocks.11, offload idx: 11, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.0, offload idx: 12, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.1, offload idx: 13, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.2, offload idx: 14, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.3, offload idx: 15, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.4, offload idx: 16, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.5, offload idx: 17, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,504 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.6, offload idx: 18, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.7, offload idx: 19, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.8, offload idx: 20, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.9, offload idx: 21, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.10, offload idx: 22, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.11, offload idx: 23, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.12, offload idx: 24, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.13, offload idx: 25, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.14, offload idx: 26, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.15, offload idx: 27, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.16, offload idx: 28, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.17, offload idx: 29, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.18, offload idx: 30, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.19, offload idx: 31, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.20, offload idx: 32, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.21, offload idx: 33, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.22, offload idx: 34, offload_layers_num: 36
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,505 INFO [mindspeed_mm.fsdp.features.memory.async_offload:48] => Applying activation offload to module: model.language_model.layers.23, offload idx: 35, offload_layers_num: 36
+[rank0]:[W915 08:55:46.081618190 NPUCachingAllocator.cpp:198] Warning: The current CANN and Soc Version require processing for 32 padding size, with memory allocation. (function operator())
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,816 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual set forward prefetch: ['model.visual.blocks.0']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,816 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.0 set forward prefetch: ['model.visual.blocks.1']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,816 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.1 set forward prefetch: ['model.visual.blocks.2']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,817 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.2 set forward prefetch: ['model.visual.blocks.3']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,817 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.3 set forward prefetch: ['model.visual.blocks.4']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,817 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.4 set forward prefetch: ['model.visual.blocks.5']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,817 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.5 set forward prefetch: ['model.visual.blocks.6']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,817 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.6 set forward prefetch: ['model.visual.blocks.7']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,817 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.7 set forward prefetch: ['model.visual.blocks.8']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,817 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.8 set forward prefetch: ['model.visual.blocks.9']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,818 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.9 set forward prefetch: ['model.visual.blocks.10']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,818 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.10 set forward prefetch: ['model.visual.blocks.11']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,818 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.11 set forward prefetch: ['model.language_model.embed_tokens']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,818 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.embed_tokens set forward prefetch: ['model.language_model']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,819 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model set forward prefetch: ['model.language_model.layers.0']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,819 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.0 set forward prefetch: ['model.language_model.layers.1']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,819 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.1 set forward prefetch: ['model.language_model.layers.2']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,819 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.2 set forward prefetch: ['model.language_model.layers.3']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,820 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.3 set forward prefetch: ['model.language_model.layers.4']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,820 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.4 set forward prefetch: ['model.language_model.layers.5']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,820 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.5 set forward prefetch: ['model.language_model.layers.6']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,821 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.6 set forward prefetch: ['model.language_model.layers.7']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,821 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.7 set forward prefetch: ['model.language_model.layers.8']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,822 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.8 set forward prefetch: ['model.language_model.layers.9']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,822 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.9 set forward prefetch: ['model.language_model.layers.10']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,823 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.10 set forward prefetch: ['model.language_model.layers.11']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,823 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.11 set forward prefetch: ['model.language_model.layers.12']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,824 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.12 set forward prefetch: ['model.language_model.layers.13']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,824 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.13 set forward prefetch: ['model.language_model.layers.14']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,825 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.14 set forward prefetch: ['model.language_model.layers.15']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,825 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.15 set forward prefetch: ['model.language_model.layers.16']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,826 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.16 set forward prefetch: ['model.language_model.layers.17']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,827 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.17 set forward prefetch: ['model.language_model.layers.18']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,827 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.18 set forward prefetch: ['model.language_model.layers.19']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,828 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.19 set forward prefetch: ['model.language_model.layers.20']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,829 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.20 set forward prefetch: ['model.language_model.layers.21']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,830 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.21 set forward prefetch: ['model.language_model.layers.22']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,830 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.22 set forward prefetch: ['model.language_model.layers.23']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,831 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.23 set forward prefetch: ['lm_head']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,843 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => lm_head set backward prefetch: ['model.language_model']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,844 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model set backward prefetch: ['model.language_model.layers.23']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,845 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.23 set backward prefetch: ['model.language_model.layers.22']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,846 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.22 set backward prefetch: ['model.language_model.layers.21']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,846 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.21 set backward prefetch: ['model.language_model.layers.20']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,847 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.20 set backward prefetch: ['model.language_model.layers.19']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,848 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.19 set backward prefetch: ['model.language_model.layers.18']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,848 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.18 set backward prefetch: ['model.language_model.layers.17']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,849 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.17 set backward prefetch: ['model.language_model.layers.16']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,850 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.16 set backward prefetch: ['model.language_model.layers.15']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,850 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.15 set backward prefetch: ['model.language_model.layers.14']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,851 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.14 set backward prefetch: ['model.language_model.layers.13']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,851 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.13 set backward prefetch: ['model.language_model.layers.12']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,852 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.12 set backward prefetch: ['model.language_model.layers.11']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,852 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.11 set backward prefetch: ['model.language_model.layers.10']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,853 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.10 set backward prefetch: ['model.language_model.layers.9']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,853 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.9 set backward prefetch: ['model.language_model.layers.8']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,854 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.8 set backward prefetch: ['model.language_model.layers.7']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,854 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.7 set backward prefetch: ['model.language_model.layers.6']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,854 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.6 set backward prefetch: ['model.language_model.layers.5']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,855 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.5 set backward prefetch: ['model.language_model.layers.4']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,855 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.4 set backward prefetch: ['model.language_model.layers.3']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,855 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.3 set backward prefetch: ['model.language_model.layers.2']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,856 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.2 set backward prefetch: ['model.language_model.layers.1']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,856 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.1 set backward prefetch: ['model.language_model.layers.0']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,856 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.layers.0 set backward prefetch: ['model.language_model.embed_tokens']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,856 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.language_model.embed_tokens set backward prefetch: ['model.visual']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,856 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual set backward prefetch: ['model.visual.blocks.11']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,857 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.11 set backward prefetch: ['model.visual.blocks.10']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,857 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.10 set backward prefetch: ['model.visual.blocks.9']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,857 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.9 set backward prefetch: ['model.visual.blocks.8']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,857 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.8 set backward prefetch: ['model.visual.blocks.7']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,857 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.7 set backward prefetch: ['model.visual.blocks.6']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,857 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.6 set backward prefetch: ['model.visual.blocks.5']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,858 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.5 set backward prefetch: ['model.visual.blocks.4']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,858 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.4 set backward prefetch: ['model.visual.blocks.3']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,858 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.3 set backward prefetch: ['model.visual.blocks.2']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,858 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.2 set backward prefetch: ['model.visual.blocks.1']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:46,858 INFO [mindspeed_mm.fsdp.distributed.fully_shard_parallel:48] => model.visual.blocks.1 set backward prefetch: ['model.visual.blocks.0']
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:47,151 INFO [__main__:48] => Prepare data
+2026-09-15 08:55:50,685 - template - 730 - INFO - Replace eos token: <|im_end|>
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:50,685 INFO [mindspeed_mm.fsdp.data.data_utils.func_utils.template:730] => Replace eos token: <|im_end|>
+2026-09-15 08:55:50,787 - template - 730 - INFO - Replace eos token: <|im_end|>
+[Rank 1 | Local Rank 1] 2026-09-15 08:55:50,787 INFO [mindspeed_mm.fsdp.data.data_utils.func_utils.template:730] => Replace eos token: <|im_end|>
+[Rank 0 | Local Rank 0] 2026-09-15 08:55:52,327 INFO [httpx:1025] => HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/json/json.py "HTTP/1.1 200 OK"
+Converting format of dataset (num_proc=16):   0%|          | 0/157712 [00:00<?, ? examples/s]Converting format of dataset (num_proc=16):   0%|          | 572/157712 [00:15<1:12:07, 36.31 examples/s]Converting format of dataset (num_proc=16):   9%|▉         | 13901/157712 [00:15<01:56, 1233.56 examples/s]Converting format of dataset (num_proc=16):  19%|█▉        | 29684/157712 [00:15<00:39, 3218.02 examples/s]Converting format of dataset (num_proc=16):  29%|██▉       | 46358/157712 [00:16<00:18, 6125.54 examples/s]Converting format of dataset (num_proc=16):  41%|████      | 64308/157712 [00:16<00:08, 10415.28 examples/s]Converting format of dataset (num_proc=16):  52%|█████▏    | 81750/157712 [00:16<00:04, 16017.68 examples/s]Converting format of dataset (num_proc=16):  64%|██████▎   | 100187/157712 [00:16<00:02, 23850.75 examples/s]Converting format of dataset (num_proc=16):  75%|███████▌  | 118722/157712 [00:16<00:01, 33914.74 examples/s]Converting format of dataset (num_proc=16):  88%|████████▊ | 138009/157712 [00:16<00:00, 46908.35 examples/s]Converting format of dataset (num_proc=16):  99%|█████████▉| 156259/157712 [00:16<00:00, 57776.58 examples/s]Converting format of dataset (num_proc=16): 100%|██████████| 157712/157712 [00:20<00:00, 7529.33 examples/s] 
+training example:
+input_ids:
+[248045, 846, 198, 248053, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248056, 248054, 198, 3710, 513, 279, 7736, 314, 279, 5647, 303, 279, 2099, 30, 248046, 198, 248045, 74455, 198, 760, 5647, 303, 279, 2099, 369, 4022, 321, 2438, 13, 248046, 198, 248045, 846, 198, 3710, 4416, 628, 381, 3753, 383, 279, 1142, 314, 279, 5647, 30, 248046, 198, 248045, 74455, 198, 760, 1142, 314, 279, 5647, 4275, 449, 31604, 13, 248046, 198, 248045, 846, 198, 3742, 279, 5647, 9550, 1441, 279, 8329, 466, 12854, 974, 310, 279, 3008, 30, 248046, 198, 248045, 74455, 198, 760, 5647, 369, 9550, 1441, 279, 8329, 11, 864, 369, 36947, 440, 1208, 321, 975, 11145, 13, 248046, 198]
+inputs:
+<|im_start|>user
+<|vision_start|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|image_pad|><|vision_end|>
+What are the colors of the bus in the image?<|im_end|>
+<|im_start|>assistant
+The bus in the image is white and red.<|im_end|>
+<|im_start|>user
+What feature can be seen on the back of the bus?<|im_end|>
+<|im_start|>assistant
+The back of the bus features an advertisement.<|im_end|>
+<|im_start|>user
+Is the bus driving down the street or pulled off to the side?<|im_end|>
+<|im_start|>assistant
+The bus is driving down the street, which is crowded with people and other vehicles.<|im_end|>
+
+label_ids:
+[-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, 760, 5647, 303, 279, 2099, 369, 4022, 321, 2438, 13, 248046, 198, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, 760, 1142, 314, 279, 5647, 4275, 449, 31604, 13, 248046, 198, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, 760, 5647, 369, 9550, 1441, 279, 8329, 11, 864, 369, 36947, 440, 1208, 321, 975, 11145, 13, 248046, 198]
+labels:
+The bus in the image is white and red.<|im_end|>
+The back of the bus features an advertisement.<|im_end|>
+The bus is driving down the street, which is crowded with people and other vehicles.<|im_end|>
+
+[Rank 0 | Local Rank 0] 2026-09-15 08:56:16,536 WARNING [mindspeed_mm.fsdp.data.dataloader.data_collator:177] => model_name is deprecated and will be removed in a future version. Please use collator_id instead. Available collator_ids: llm_pretrain, qwen3asr, qwen3omni, qwen3vl, step3_vl.
+[Rank 1 | Local Rank 1] 2026-09-15 08:56:17,293 INFO [httpx:1025] => HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/json/json.py "HTTP/1.1 200 OK"
+[Rank 1 | Local Rank 1] 2026-09-15 08:56:17,643 WARNING [mindspeed_mm.fsdp.data.dataloader.data_collator:177] => model_name is deprecated and will be removed in a future version. Please use collator_id instead. Available collator_ids: llm_pretrain, qwen3asr, qwen3omni, qwen3vl, step3_vl.
+2026-09-15 08:56:20,471 - template - 730 - INFO - Replace eos token: <|im_end|>
+[Rank 0 | Local Rank 0] 2026-09-15 08:56:20,471 INFO [mindspeed_mm.fsdp.data.data_utils.func_utils.template:730] => Replace eos token: <|im_end|>
+2026-09-15 08:56:21,722 - template - 730 - INFO - Replace eos token: <|im_end|>
+[Rank 1 | Local Rank 1] 2026-09-15 08:56:21,722 INFO [mindspeed_mm.fsdp.data.data_utils.func_utils.template:730] => Replace eos token: <|im_end|>
+/usr/local/python3.12.13/lib/python3.12/site-packages/torch_npu/distributed/distributed_c10d.py:220: UserWarning: HCCL doesn't support gather at the moment. Implemented with allgather instead.
+  warnings.warn(
+[rank0]:[W915 08:56:21.411627490 CopyKernelOpApi.cpp:58] Warning: E39999: Inner Error!
+E39999[PID: 30575] 2026-09-15-08:56:21.945.783 (E39999):  The error from device(chipId:1, dieId:0), serial number is 150, an exception occurred during AICPU execution, stream_id:76, task_id:38, errcode:11006, msg:inner error.[FUNC:ProcessStarsAicpuErrorInfo][FILE:device_error_proc.cc][LINE:1585]
+TraceBack (most recent call last):
+       An error occurred in the kernel task, retCode=0x2a, [aicpu exception].[FUNC:PreCheckTaskErr][FILE:davinci_kernel_task.cc][LINE:1268]
+       AI CPU kernel execute failed, device_id=0, stream_id=76, task_id=38, soName=libscatter_aicpu_kernel.so, funcName=HcclLaunchAicpuKernel, kernelName=HcclLaunchAicpuKernel, errorCode=0x2a.[FUNC:PrintAicpuErrorInfo][FILE:davinci_kernel_task.cc][LINE:992]
+       AI CPU kernel execution failed, device_id=0,stream_id=76,task_id=38, soName=libscatter_aicpu_kernel.so, funcName=HcclLaunchAicpuKernel, kernelName=HcclLaunchAicpuKernel.[FUNC:PrintAicpuErrorInfo][FILE:davinci_kernel_task.cc][LINE:1017]
+       rtStreamSynchronize execution failed, reason=aicpu exception[FUNC:FuncErrorReason][FILE:error_message_manage.cc][LINE:65]
+       synchronize stream failed, runtime result = 507018[FUNC:ReportCallError][FILE:log_inner.cpp][LINE:148]
+ (function copy_between_host_and_device_opapi)
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/train/trainer.py", line 449, in <module>
+[rank1]:     trainer = Trainer(args=arguments)
+[rank1]:               ^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/train/trainer.py", line 93, in __init__
+[rank1]:     self.trainer = TrainEngine(
+[rank1]:                    ^^^^^^^^^^^^
+[rank1]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/train/train_engine.py", line 59, in __init__
+[rank1]:     self.iteration, self.consumed_train_samples = self.load()
+[rank1]:                                                   ^^^^^^^^^^^
+[rank1]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/train/train_engine.py", line 364, in load
+[rank1]:     release = self.checkpointer.load(
+[rank1]:               ^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/checkpoint/dcp_checkpointer.py", line 246, in load
+[rank1]:     dcp.load(
+[rank1]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/logger.py", line 87, in wrapper
+[rank1]:     result = func(*args, **kwargs)
+[rank1]:              ^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py", line 465, in inner_func
+[rank1]:     return func(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/state_dict_loader.py", line 177, in load
+[rank1]:     _load_state_dict(
+[rank1]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/state_dict_loader.py", line 234, in _load_state_dict
+[rank1]:     central_plan: LoadPlan = distW.reduce_scatter("plan", local_step, global_step)
+[rank1]:                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py", line 217, in reduce_scatter
+[rank1]:     result = self.scatter_object(all_results)
+[rank1]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py", line 162, in scatter_object
+[rank1]:     dist.scatter_object_list(
+[rank1]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank1]:     return func(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 3627, in scatter_object_list
+[rank1]:     obj_tensor_size = torch.tensor([0], dtype=torch.long, device=pg_device)
+[rank1]:                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]: RuntimeError: ACL stream synchronize failed, error code:507018
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/train/trainer.py", line 449, in <module>
+[rank0]:     trainer = Trainer(args=arguments)
+[rank0]:               ^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/train/trainer.py", line 93, in __init__
+[rank0]:     self.trainer = TrainEngine(
+[rank0]:                    ^^^^^^^^^^^^
+[rank0]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/train/train_engine.py", line 59, in __init__
+[rank0]:     self.iteration, self.consumed_train_samples = self.load()
+[rank0]:                                                   ^^^^^^^^^^^
+[rank0]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/train/train_engine.py", line 364, in load
+[rank0]:     release = self.checkpointer.load(
+[rank0]:               ^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/MindSpeed-MM/mindspeed_mm/fsdp/checkpoint/dcp_checkpointer.py", line 246, in load
+[rank0]:     dcp.load(
+[rank0]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/logger.py", line 87, in wrapper
+[rank0]:     result = func(*args, **kwargs)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py", line 465, in inner_func
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/state_dict_loader.py", line 177, in load
+[rank0]:     _load_state_dict(
+[rank0]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/state_dict_loader.py", line 234, in _load_state_dict
+[rank0]:     central_plan: LoadPlan = distW.reduce_scatter("plan", local_step, global_step)
+[rank0]:                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py", line 217, in reduce_scatter
+[rank0]:     result = self.scatter_object(all_results)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/checkpoint/utils.py", line 162, in scatter_object
+[rank0]:     dist.scatter_object_list(
+[rank0]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 3627, in scatter_object_list
+[rank0]:     obj_tensor_size = torch.tensor([0], dtype=torch.long, device=pg_device)
+[rank0]:                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]: RuntimeError: ACL stream synchronize failed, error code:507018
+[rank0]:[W915 08:56:21.415736900 NPUStream.cpp:683] Warning: NPU warning, error code is 507018[Error]: 
+[Error]: The aicpu execution is abnormal. 
+        Rectify the fault based on the error information in the ascend log.
+EE9999: Inner Error!
+EE9999[PID: 30575] 2026-09-15-08:56:21.951.565 (EE9999):  rtDeviceSynchronizeWithTimeout execution failed, reason=aicpu exception[FUNC:FuncErrorReason][FILE:error_message_manage.cc][LINE:65]
+TraceBack (most recent call last):
+       wait for compute device to finish failed, runtime result = 507018.[FUNC:ReportCallError][FILE:log_inner.cpp][LINE:148]
+ (function npuSynchronizeUsedDevices)
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499] Failed to shutdown process group during NPU exit.
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499] Traceback (most recent call last):
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499]   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch_npu/distributed/distributed_c10d.py", line 497, in _destructor_process_group
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499]     pg_to_shutdown.shutdown()
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499] RuntimeError: synchronize:../torch_npu/csrc/core/npu/NPUStream.cpp:414 NPU function error: c10_npu::acl::AclrtSynchronizeStreamWithTimeout(stream()), error code is 507018
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499] [ERROR] 2026-09-15-08:56:21 (PID:30575, Device:0, RankID:0) ERR00100 PTA call acl api failed
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499] [Error]: The aicpu execution is abnormal. 
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499]         Rectify the fault based on the error information in the ascend log.
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499] EE9999: Inner Error!
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499] EE9999[PID: 30575] 2026-09-15-08:56:21.952.816 (EE9999):  rtStreamSynchronizeWithTimeout execution failed, reason=aicpu exception[FUNC:FuncErrorReason][FILE:error_message_manage.cc][LINE:65]
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499] TraceBack (most recent call last):
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499]        synchronize stream with timeout failed, runtime result = 507018[FUNC:ReportCallError][FILE:log_inner.cpp][LINE:148]
+[rank0]:W0915 08:56:21.953000 30575 torch_npu/distributed/distributed_c10d.py:499] 
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499] Failed to shutdown process group during NPU exit.
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499] Traceback (most recent call last):
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499]   File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch_npu/distributed/distributed_c10d.py", line 497, in _destructor_process_group
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499]     pg_to_shutdown.shutdown()
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499] RuntimeError: synchronize:../torch_npu/csrc/core/npu/NPUStream.cpp:414 NPU function error: c10_npu::acl::AclrtSynchronizeStreamWithTimeout(stream()), error code is 507018
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499] [ERROR] 2026-09-15-08:56:21 (PID:30576, Device:1, RankID:1) ERR00100 PTA call acl api failed
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499] [Error]: The aicpu execution is abnormal. 
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499]         Rectify the fault based on the error information in the ascend log.
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499] EE9999: Inner Error!
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499] EE9999[PID: 30576] 2026-09-15-08:56:21.952.664 (EE9999):  rtStreamSynchronizeWithTimeout execution failed, reason=aicpu exception[FUNC:FuncErrorReason][FILE:error_message_manage.cc][LINE:65]
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499] TraceBack (most recent call last):
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499]        synchronize stream with timeout failed, runtime result = 507018[FUNC:ReportCallError][FILE:log_inner.cpp][LINE:148]
+[rank1]:W0915 08:56:21.953000 30576 torch_npu/distributed/distributed_c10d.py:499] 
+[W915 08:56:21.418989490 NPUStream.cpp:665] Warning: NPU warning, error code is 507018[Error]: 
+[Error]: The aicpu execution is abnormal. 
+        Rectify the fault based on the error information in the ascend log.
+EE9999: Inner Error!
+EE9999[PID: 30575] 2026-09-15-08:56:21.954.813 (EE9999):  rtDeviceSynchronizeWithTimeout execution failed, reason=aicpu exception[FUNC:FuncErrorReason][FILE:error_message_manage.cc][LINE:65]
+TraceBack (most recent call last):
+       wait for compute device to finish failed, runtime result = 507018.[FUNC:ReportCallError][FILE:log_inner.cpp][LINE:148]
+ (function npuSynchronizeDevice)
+[ERROR] 2026-09-15-08:56:23 (PID:30575, Device:0, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+[ERROR] 2026-09-15-08:56:23 (PID:30576, Device:1, RankID:-1) ERR99999 UNKNOWN applicaiton exception
+W0915 08:56:25.989000 30495 torch/distributed/elastic/multiprocessing/api.py:900] Sending process 30576 closing signal SIGTERM
+E0915 08:56:26.154000 30495 torch/distributed/elastic/multiprocessing/api.py:874] failed (exitcode: 1) local_rank: 0 (pid: 30575) of binary: /usr/local/python3.12.13/bin/python3.12
+Traceback (most recent call last):
+  File "/usr/local/python3.12.13/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 355, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/run.py", line 892, in main
+    run(args)
+  File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/run.py", line 883, in run
+    elastic_launch(
+  File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 139, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 270, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+mindspeed_mm/fsdp/train/trainer.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-09-15_08:56:25
+  host      : 1e9dd3cf6df5
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 30575)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+[ERROR] 2026-09-15-08:56:26 (PID:30495, Device:-1, RankID:-1) ERR99999 UNKNOWN applicaiton exception

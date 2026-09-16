@@ -1,0 +1,37 @@
+{
+  "model": "Qwen3.5-4B",
+  "comparison": [
+    {
+      "dtype": "float32",
+      "device": "npu:1",
+      "load_seconds": 5.247599329799414,
+      "runs": 2,
+      "max_new_tokens": 64,
+      "mean_generation_seconds": 2.8617564514279366,
+      "mean_tokens_per_second": 22.36449936458734,
+      "peak_memory_bytes": 16914106368,
+      "completion_tokens": [
+        64,
+        64
+      ]
+    },
+    {
+      "dtype": "float16",
+      "device": "npu:1",
+      "load_seconds": 2.947344420477748,
+      "runs": 2,
+      "max_new_tokens": 64,
+      "mean_generation_seconds": 3.2436063401401043,
+      "mean_tokens_per_second": 19.731137265300738,
+      "peak_memory_bytes": 8602201600,
+      "completion_tokens": [
+        64,
+        64
+      ]
+    }
+  ],
+  "improvement": {
+    "throughput_ratio": 0.882252580021695,
+    "peak_memory_reduction_percent": 49.14184992785307
+  }
+}

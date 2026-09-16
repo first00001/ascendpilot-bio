@@ -1,0 +1,8 @@
+  File: /opt/qwen35_08b/data/output_llava_coco_data.json
+  Size: 204815268 	Blocks: 400032     IO Block: 4096   regular file
+Device: 0,54	Inode: 9744753116  Links: 1
+Access: (0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2026-09-14 10:30:13.931973470 +0000
+Modify: 2026-09-14 07:58:49.000000000 +0000
+Change: 2026-09-14 10:05:07.271973470 +0000
+ Birth: 2026-09-14 10:05:06.703973470 +0000

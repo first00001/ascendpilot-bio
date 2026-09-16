@@ -1,0 +1,40 @@
+{
+  "timestamp_utc": "2026-09-14T03:48:07.806460+00:00",
+  "mode": "chat",
+  "endpoint": "http://127.0.0.1:8000",
+  "concurrency": 1,
+  "warmup_requests": 1,
+  "service": {
+    "service": "plant-cell-agent",
+    "version": "2.1.0",
+    "qwen": {
+      "model": "Qwen3.5-4B",
+      "device": "npu:0"
+    },
+    "riceFM": {
+      "device": "npu:1",
+      "checkpoint_sha256": "b6971934ea4bb5b3ec9e64feeecd90bb32c66aa0667cbd3115990afc68443361",
+      "reference": "ZH11_riceFM_eval"
+    },
+    "auth": "x-api-key-or-bearer"
+  },
+  "latency": {
+    "requests": 3,
+    "successes": 3,
+    "failures": 0,
+    "error_rate": 0.0,
+    "min_ms": 3208.494720980525,
+    "mean_ms": 3225.797733912865,
+    "median_ms": 3222.0538798719645,
+    "p95_ms": 3246.8446008861065,
+    "max_ms": 3246.8446008861065
+  },
+  "generation": {
+    "mean_server_seconds": 3.2219441775232553,
+    "mean_tokens_per_second": 19.864268531469623,
+    "min_tokens_per_second": 19.73414206500293,
+    "max_tokens_per_second": 19.97107607481783,
+    "max_new_tokens": 64,
+    "note": "Endpoint is non-streaming; TTFT is not reported."
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "timestamp_utc": "2026-09-14T03:48:07.806460+00:00",
+  "source": {
+    "model": "Qwen3.5-4B",
+    "path": "/workspace/shared_assets/models/Qwen/Qwen3.5-4B",
+    "baseline_precision": "float32",
+    "framework": "Transformers"
+  },
+  "target": {
+    "os": "openEuler 24.03 ARM64",
+    "accelerator": "2 x Ascend 910, 64 GB HBM each",
+    "cann": "9.1.0-beta.3",
+    "torch": "2.7.1",
+    "torch_npu": "2.7.1.post10",
+    "qwen_device": "npu:0",
+    "application_model_device": "npu:1"
+  },
+  "policy": {
+    "selector": "measured multi-objective policy",
+    "objective": "balanced",
+    "max_memory_gb": 12.0,
+    "selected_precision": "float16",
+    "reason": "FP32 exceeded the configured 12 GB memory budget; FP16 used 8.60 GB."
+  },
+  "benchmarks": {
+    "precision_source": "results/benchmarks/20260914-034732/qwen-dtype-20260914-034732.json",
+    "float32": {
+      "load_seconds": 5.247599329799414,
+      "mean_generation_seconds": 2.8617564514279366,
+      "mean_tokens_per_second": 22.36449936458734,
+      "peak_memory_bytes": 16914106368
+    },
+    "float16": {
+      "load_seconds": 2.947344420477748,
+      "mean_generation_seconds": 3.2436063401401043,
+      "mean_tokens_per_second": 19.731137265300738,
+      "peak_memory_bytes": 8602201600
+    },
+    "online_qwen": {
+      "requests": 3,
+      "mean_ms": 3225.797733912865,
+      "p95_ms": 3246.8446008861065,
+      "error_rate": 0.0,
+      "mean_tokens_per_second": 19.864268531469623
+    }
+  },
+  "checks": [
+    {"name": "service_health", "status": "passed"},
+    {"name": "qwen_on_ascend_npu", "status": "passed"},
+    {"name": "api_authentication_401_200", "status": "passed"},
+    {"name": "supervisor_restart", "status": "passed"},
+    {"name": "version_endpoint", "status": "passed", "version": "2.1.0"},
+    {"name": "plantcell_application", "status": "passed"},
+    {"name": "adaptive_budget_and_agent_routing", "status": "passed"},
+    {"name": "agent_end_to_end_5_tasks", "status": "passed", "task_completion_rate": 1.0, "failures": 0},
+    {"name": "grounding_12_case_ab", "status": "not-run"}
+  ],
+  "status": "partial",
+  "limitations": [
+    "The 12-case grounding A/B script has not yet been executed on the target NPU; the smaller 5-task Agent contract evaluation passed 5/5.",
+    "The non-streaming endpoint does not provide TTFT."
+  ]
+}

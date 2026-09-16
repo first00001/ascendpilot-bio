@@ -1,0 +1,28 @@
+{
+  "window": {
+    "start": 1,
+    "end": 100,
+    "common_iterations": 100
+  },
+  "ascendc": {
+    "iterations": 100,
+    "mean_elapsed_ms": 3075.263,
+    "samples_per_second": 1.300701761117667,
+    "mean_loss": 1.39632216
+  },
+  "triton": {
+    "iterations": 100,
+    "mean_elapsed_ms": 3245.917,
+    "samples_per_second": 1.2323174005989679,
+    "mean_loss": 1.39630775
+  },
+  "loss_alignment": {
+    "mean_absolute_difference": 0.001260289999999995,
+    "max_absolute_difference": 0.004655000000000076,
+    "last_step_absolute_difference": 0.0013929999999999776
+  },
+  "ascendc_vs_triton": {
+    "throughput_change_percent": 5.549248958544362,
+    "step_time_change_percent": -5.2574973420454025
+  }
+}

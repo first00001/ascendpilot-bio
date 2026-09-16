@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "selected_precision": "float16",
+  "device": "npu:1",
+  "objective": "balanced",
+  "max_memory_gb": 12.0,
+  "measured": {
+    "dtype": "float16",
+    "device": "npu:1",
+    "load_seconds": 2.947344420477748,
+    "runs": 2,
+    "max_new_tokens": 64,
+    "mean_generation_seconds": 3.2436063401401043,
+    "mean_tokens_per_second": 19.731137265300738,
+    "peak_memory_bytes": 8602201600,
+    "completion_tokens": [
+      64,
+      64
+    ],
+    "selection_score": 1.0
+  },
+  "rejected": [
+    {
+      "dtype": "float32",
+      "device": "npu:1",
+      "load_seconds": 5.247599329799414,
+      "runs": 2,
+      "max_new_tokens": 64,
+      "mean_generation_seconds": 2.8617564514279366,
+      "mean_tokens_per_second": 22.36449936458734,
+      "peak_memory_bytes": 16914106368,
+      "completion_tokens": [
+        64,
+        64
+      ]
+    }
+  ],
+  "timestamp_utc": "2026-09-14T04:19:37.081226+00:00"
+}

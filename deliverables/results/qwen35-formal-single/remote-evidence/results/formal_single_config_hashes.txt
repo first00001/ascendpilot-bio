@@ -1,0 +1,3 @@
+a0b4c5ab49898a1dbbd51b2bdae27f702dcbaf738c1e153d8d3d4a599179a41e  /opt/qwen35_08b/tooling/configs/qwen3_5_0.8B_config.yaml
+3d0122c2103b298cc23e46f68cde135ca2069138b97bfd1c428f37f34db68d53  /opt/qwen35_08b/qwen3_5_0.8B_ascendc_formal_single.yaml
+f0f7243055dc42d01c412ab3c796b8e98e620c7e8786863865b1991cbcf9c06d  /opt/qwen35_08b/qwen3_5_0.8B_triton_formal_single.yaml

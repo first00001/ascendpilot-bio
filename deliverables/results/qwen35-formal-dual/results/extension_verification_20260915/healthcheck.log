@@ -1,0 +1,49 @@
+{
+    "status": "ok",
+    "service": "plant-cell-agent",
+    "qwen_device": "npu:0",
+    "ricefm_device": "npu:1",
+    "ricefm_runtime": "lazy",
+    "artifacts": {
+        "zh11_data": true,
+        "zh11_embeddings": true,
+        "zh11_metrics": true,
+        "ricefm_checkpoint": true
+    }
+}
+{
+    "service": "plant-cell-agent",
+    "version": "2.1.0",
+    "qwen": {
+        "model": "Qwen3.5-4B",
+        "device": "npu:0"
+    },
+    "riceFM": {
+        "device": "npu:1",
+        "checkpoint_sha256": "b6971934ea4bb5b3ec9e64feeecd90bb32c66aa0667cbd3115990afc68443361",
+        "reference": "ZH11_riceFM_eval"
+    },
+    "auth": "x-api-key-or-bearer"
+}
+{
+    "accuracy": 0.6464354527938343,
+    "macro_f1": 0.6449252675025978,
+    "weighted_f1": 0.6445163704127321,
+    "dataset": "ZH11_riceFM_eval",
+    "cells": 5188,
+    "genes": 39914,
+    "nonzero_values": 9515606,
+    "celltype_L1_classes": 52,
+    "train_cells": 4150,
+    "test_cells": 1038,
+    "split": "deterministic stratified holdout",
+    "seed": 2026,
+    "test_ratio": 0.2,
+    "classifier": "cosine distance-weighted 5-NN",
+    "embedding_model": "riceFM pretraining checkpoint",
+    "embedding_dimensions": 256,
+    "load_seconds": 0.05984289012849331,
+    "inference_seconds": 25.130129979923368,
+    "cells_per_second": 206.4454105149766,
+    "limitation": "The checkpoint may have seen overlapping ZH11 profiles during pretraining; this is a labeled-reference transfer evaluation, not an independent external test."
+}

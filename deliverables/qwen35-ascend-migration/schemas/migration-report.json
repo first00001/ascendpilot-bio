@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Qwen3.5 Ascend migration report",
+  "type": "object",
+  "required": ["timestamp_utc", "source", "target", "policy", "checks", "status"],
+  "properties": {
+    "timestamp_utc": {"type": "string", "format": "date-time"},
+    "source": {"type": "object"},
+    "target": {"type": "object"},
+    "policy": {"type": "object"},
+    "benchmarks": {"type": "object"},
+    "checks": {"type": "array", "items": {"type": "object"}},
+    "status": {"enum": ["passed", "failed", "partial"]},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}
+

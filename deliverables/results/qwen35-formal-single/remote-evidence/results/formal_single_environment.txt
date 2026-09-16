@@ -1,0 +1,5 @@
+2026-09-15T09:19:47+00:00
+Python 3.12.13
+torch 2.7.1+cpu
+torch_npu 2.7.1.post10
+fla_npu unknown

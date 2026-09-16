@@ -1,0 +1,173 @@
+2026-09-15T09:30:33+00:00
+Linux 1e9dd3cf6df5 5.10.0-216.0.0.115.oe2203sp4.aarch64 #1 SMP Thu Jun 27 15:22:10 CST 2024 aarch64 aarch64 aarch64 GNU/Linux
+NAME="openEuler"
+VERSION="24.03 (LTS-SP3)"
+ID="openEuler"
+VERSION_ID="24.03"
+PRETTY_NAME="openEuler 24.03 (LTS-SP3)"
+ANSI_COLOR="0;31"
+
+Python 3.12.13
+absl-py==2.4.0
+accelerate==1.14.0
+aiohappyeyeballs==2.7.1
+aiohttp==3.14.3
+aiosignal==1.4.0
+annotated-doc==0.0.5
+annotated-types==0.8.0
+antlr4-python3-runtime==4.9.3
+anyio==4.15.1
+asc_op_compile_base @ file:///root/selfgz516917567/lib/asc_op_compile_base-0.1.0-py3-none-any.whl#sha256=ed21f68ee8788c522d20575f3eafa576cd56a3770ebbcdd37a0571a53588abf5
+asc_opc_tool @ file:///root/selfgz516917567/lib/asc_opc_tool-0.1.0-py3-none-any.whl#sha256=b3791ea7b0f144fd010ee65b7db2cd5f51bf2d5aebb1560960dc2870187704b8
+attrs==24.2.0
+auto_tune @ file:///root/selfgz2079529414/share/info/tbe-tik/python/auto_tune-0.1.0-py3-none-any.whl#sha256=4e59a38533079cb5146253d449fa047256ff1a9630d134636214b235395ee8a0
+av==18.1.0
+beartype==0.22.9
+beautifulsoup4==4.15.0
+bs4==0.0.2
+cannsim @ file:///usr/local/Ascend/cann-9.1.0-beta.3/tools/simulator/bin/cannsim-0.1.0-py3-none-any.whl#sha256=5a47f5badd2cfea2362994a98c522de0d42a91d33e3078bdf8b5ab24802bf3c1
+certifi==2026.6.17
+cffi==2.0.0
+charset-normalizer==3.4.7
+click==8.5.0
+cloudpickle==3.1.2
+cryptography==50.0.1
+Cython==3.2.8
+dataflow @ file:///root/selfgz130423670/aarch64-linux/lib64/dataflow-0.0.1-py3-none-any.whl#sha256=21c2fb273150c265cb1d15fa796efcc295be8ae454a2c679e50be62930da53cf
+datasets==5.0.1
+decorator==5.1.1
+diffusers==0.39.0
+dill==0.4.1
+docstring_parser==0.18.0
+einops==0.8.2
+es_cv @ file:///root/selfgz4812614074/ops_cv/es_packages/whl/es_cv-1.0.0-py3-none-any.whl#sha256=74714337ce6f4cd3b913b480c6e5512d377b594a9a34ae3d7295afdec9caa4cd
+es_math @ file:///root/selfgz2684829131/ops_math/es_packages/whl/es_math-1.0.0-py3-none-any.whl#sha256=1a60725ba4495af1f4c765cf32babed6ef51624902d363e16439d88d17e05de4
+es_nn @ file:///root/selfgz3785027674/ops_nn/es_packages/whl/es_nn-1.0.0-py3-none-any.whl#sha256=8e3b53c4f1efb170f6eb49a2b3156ff51e4bb79e9c73f1bc286f8e756828a168
+es_transformer @ file:///root/selfgz5188020886/ops_transformer/es_packages/whl/es_transformer-1.0.0-py3-none-any.whl#sha256=22a0c8fd850f951245685c8197ff55306bf9ce390a95fe302f5136ec55860028
+execnet==2.1.2
+fastapi==0.141.1
+filelock==3.32.3
+fla-npu @ file:///opt/flash-linear-attention-npu/torch_custom/fla_npu/dist/fla_npu-1.0.0-cp312-cp312-linux_aarch64.whl#sha256=4930f48f23d34eeb3ffb6890625a3ae7e72ee364548eccbd9745df25af660ffd
+frozenlist==1.8.0
+fsspec==2026.6.0
+ftfy==6.3.1
+ge-py @ file:///root/selfgz130423670/aarch64-linux/lib64/ge_py-0.0.1-py3-none-any.whl#sha256=c54503136b74239083aba3754d52ee50faf62113825d2bac2c1ed110d0947b8b
+gpytorch==1.15.2
+greenlet==3.5.5
+h11==0.16.0
+hccl @ file:///root/selfgz4035728433/aarch64-linux/lib64/hccl-0.1.0-py3-none-any.whl#sha256=297b2cca8b2daee9267adb991d8da218aeff549542a99de4bc3a5e1ef80775c7
+hf-xet==1.6.0
+httpcore==1.0.9
+httpx==0.28.1
+huggingface_hub==1.31.0
+idna==3.18
+ImageIO==2.37.4
+imageio-ffmpeg==0.6.0
+importlib_metadata==9.0.1
+iniconfig==2.3.0
+Jinja2==3.1.6
+joblib==1.6.0
+jsonargparse==4.52.0
+jsonnet==0.22.0
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+linear_operator==0.6.1
+llm_datadist @ file:///root/selfgz1937219929/hixl/lib/llm_datadist-0.0.1-py3-none-any.whl#sha256=5de1dac42e112e3a95f85ba14225c8d7e56ef335d5ee20ffb674a1239310105e
+llm_datadist_v1 @ file:///root/selfgz130423670/aarch64-linux/lib64/llm_datadist_v1-0.0.1-py3-none-any.whl#sha256=e55da149c7df6a229451f67d156e93cd934941a54a8d659707fc7f5cc2e833c4
+llvmlite==0.49.0
+markdown-it-py==4.2.0
+MarkupSafe==3.0.3
+mdurl==0.1.2
+-e git+https://gitcode.com/Ascend/MindSpeed.git@4ef4bf6182cbd6a4f3272c0bd733fc733a54fdc8#egg=mindspeed
+-e git+https://gitcode.com/Ascend/MindSpeed-MM.git@2de94dc0f7453e21015821629036f515673d32e9#egg=mindspeed_mm
+mindstudio-kl @ file:///usr/local/Ascend/cann-9.1.0-beta.3/mindstudio-operator-tools/mindstudio_kl-26.0.0-py3-none-any.whl#sha256=d5ade61457c143c898d2e25fb294dd77f5195c7a4a77db1c506a6391027c4e11
+mindstudio-kpp @ file:///usr/local/Ascend/cann-9.1.0-beta.3/mindstudio-operator-tools/mindstudio_kpp-0.0.0.dev0-py3-none-manylinux_2_17_aarch64.whl#sha256=064178fe047290939d5be7a40801024ea01fa03929a4c6810d81a466e8283800
+mindstudio-opgen @ file:///usr/local/Ascend/cann-9.1.0-beta.3/mindstudio-operator-tools/mindstudio_opgen-26.0.0-py3-none-any.whl#sha256=bdfb62e63cea6e0835773b37d050d343deb043310e024c2451bee4c7fb1141c3
+mindstudio-opst @ file:///usr/local/Ascend/cann-9.1.0-beta.3/mindstudio-operator-tools/mindstudio_opst-26.0.0-py3-none-any.whl#sha256=339849f80e9e287750351463bb9df0cb5f2bc6865990144da29cd71f9c56dc1a
+modelscope==1.38.1
+modelscope-hub==0.4.2
+mpmath==1.3.0
+ms_service_profiler @ file:///root/selfgz33771431/ms_service_profiler-26.0.0-py3-none-linux_aarch64.whl#sha256=59d4ab2803725621720e8b15a714b632c765221dd2b96bcc163a60f490618ef7
+msobjdump @ file:///usr/local/Ascend/cann-9.1.0-beta.3/tools/msobjdump-0.1.0-py3-none-any.whl#sha256=8d0e9f18c3df81d1c3a9ba1e5adc6f2380c560c0021dab8934c2fbab5bfc1b9a
+mspti @ file:///usr/local/Ascend/cann-9.1.0-beta.3/tools/mspti/python/mspti-26.0.0-py3-none-any.whl#sha256=04a20c4431043f641a5c4677f5712a3e98f4c7e30dbc98033bb7ef750de622a4
+multidict==6.8.0
+multiprocess==0.70.19
+narwhals==2.26.0
+networkx==3.6.1
+ninja==1.13.2
+npu_ops_transformer @ file:///root/selfgz5188020886/ops_transformer/es_packages/whl/npu_ops_transformer-1.0.0-py3-none-any.whl#sha256=3a32fefcf0ded92d2ab807877662638fa17d0cbaadc9a0ed4eaa0004593f7329
+numba==0.67.0
+numpy==1.26.4
+omegaconf==2.3.1
+op_compile_tool @ file:///root/selfgz2079529414/share/info/tbe-tik/python/op_compile_tool-0.1.0-py3-none-any.whl#sha256=0e586fe5a456ec3b7c91c0efd0783729dbcecfb65c437bfec7bed92cd10d2afa
+opc_tool @ file:///root/selfgz2079529414/share/info/tbe-tik/python/opc_tool-0.1.0-py3-none-any.whl#sha256=309b48279bb5d18eaa252ea351c86a760f5b9d193637943ce4eeaa8906235a86
+optype_collector @ file:///usr/local/Ascend/cann-9.1.0-beta.3/tools/optype_collector-0.1.0-py3-none-any.whl#sha256=7591242c64f9affa71883e9a15dd7d607d0847a8dc5969e59a311fab19100f84
+orjson==3.12.0
+packaging==26.3
+pandarallel==1.6.5
+pandas==3.0.5
+pathlib2==2.3.7.post1
+peft==0.20.0
+pillow==12.3.0
+pluggy==1.6.0
+propcache==0.5.2
+protobuf==3.20.0
+psutil==6.0.0
+pyarrow==25.0.1
+pybind11==3.1.0
+pycparser==3.0
+pydantic==2.13.5
+pydantic_core==2.46.5
+Pygments==2.21.0
+pytest==8.3.2
+pytest-mock==3.15.1
+pytest-xdist==3.6.1
+python-dateutil==2.9.0.post0
+python-multipart==0.0.32
+PyYAML==6.0.1
+qwen-vl-utils==0.0.14
+referencing==0.37.0
+regex==2026.9.3
+requests==2.34.2
+rich==15.0.0
+rpds-py==2026.6.3
+ruamel.yaml==0.19.1
+safetensors==0.8.0
+schedule_search @ file:///root/selfgz2079529414/share/info/tbe-tik/python/schedule_search-0.1.0-py3-none-any.whl#sha256=f2308a9d2a74728d607d4b70580084f89415878753769847a2b961c4c779792b
+scikit-learn==1.9.1
+scipy==1.13.1
+sentencepiece==0.2.2
+setuptools==67.4.0
+shellingham==1.5.4
+show_kernel_debug_data @ file:///usr/local/Ascend/cann-9.1.0-beta.3/tools/show_kernel_debug_data-0.1.0-py3-none-any.whl#sha256=89ebb146a313d10c99bac970df95e9a6ab1aaabde6c74b3ce61429bb8f17f05d
+six==1.17.0
+soupsieve==2.9.2
+SQLAlchemy==2.0.52
+starlette==1.6.0
+superkernel @ file:///root/selfgz1803728373/graph_autofusion/lib/superkernel-0.1.0-py3-none-any.whl#sha256=fefa13af6173ea3e4c16e0e830adf1731f2480aa48b50a17734f4962892c8bc6
+sympy==1.14.0
+te @ file:///root/selfgz2079529414/share/info/tbe-tik/python/te-0.4.0-py3-none-any.whl#sha256=ee89523889158504c0f9d251ec60437758a72cc2b82bd2a2a3275e5fa5696407
+threadpoolctl==3.6.0
+tokenizers==0.22.2
+toml==0.10.2
+torch==2.7.1+cpu
+torch_npu==2.7.1.post10
+torchaudio==2.11.0
+torchdata==0.11.0
+torchvision==0.22.1
+tqdm==4.70.0
+transformers==5.2.0
+triton==3.5.0
+triton_ascend==3.2.1
+typer==0.27.2
+typer-slim==0.24.0
+typeshed_client==2.13.0
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+urllib3==2.7.0
+uvicorn==0.52.4
+wcwidth==0.8.3
+wheel==0.38.4
+xxhash==4.0.1
+yarl==1.24.5
+zipp==4.1.0

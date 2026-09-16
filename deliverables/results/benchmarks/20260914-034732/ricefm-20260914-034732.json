@@ -1,0 +1,32 @@
+{
+  "timestamp_utc": "2026-09-14T03:47:54.779662+00:00",
+  "mode": "ricefm",
+  "endpoint": "http://127.0.0.1:8000",
+  "concurrency": 1,
+  "warmup_requests": 1,
+  "service": {
+    "service": "plant-cell-agent",
+    "version": "2.1.0",
+    "qwen": {
+      "model": "Qwen3.5-4B",
+      "device": "npu:0"
+    },
+    "riceFM": {
+      "device": "npu:1",
+      "checkpoint_sha256": "b6971934ea4bb5b3ec9e64feeecd90bb32c66aa0667cbd3115990afc68443361",
+      "reference": "ZH11_riceFM_eval"
+    },
+    "auth": "x-api-key-or-bearer"
+  },
+  "latency": {
+    "requests": 5,
+    "successes": 5,
+    "failures": 0,
+    "error_rate": 0.0,
+    "min_ms": 9.32127982378006,
+    "mean_ms": 9.54599417746067,
+    "median_ms": 9.46085900068283,
+    "p95_ms": 9.981980547308922,
+    "max_ms": 9.981980547308922
+  }
+}

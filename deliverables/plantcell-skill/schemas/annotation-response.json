@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RiceFM annotation response",
+  "type": "object",
+  "required": ["cells", "embedding_dimensions", "reference", "predictions"],
+  "properties": {
+    "cells": {"type": "integer"},
+    "embedding_dimensions": {"const": 256},
+    "reference": {"const": "ZH11_riceFM_eval"},
+    "predictions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["celltype_L1", "confidence", "neighbors"],
+        "properties": {
+          "celltype_L1": {"type": "string"},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "neighbors": {"type": "array"}
+        }
+      }
+    }
+  }
+}
+

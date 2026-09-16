@@ -1,0 +1,1 @@
+{"output": "/opt/qwen35_08b/results/extension_verification_20260915/environment.json", "model_ready": {"path": "/workspace/shared_assets/models/Qwen/Qwen3.5-4B", "config_exists": true, "tokenizer_exists": true}}
