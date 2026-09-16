@@ -7,7 +7,9 @@ assets used by the Ascend deployment.
 The checked-in JSON contains stratified public UMAP points, Atlas cluster IDs,
 and top marker-gene evidence for the 28-cluster analysis. Atlas cluster numbers
 are unsupervised clusters and are not presented as curated biological cell-type
-labels. No private expression matrix, barcode, prediction, model weight, or
+labels. The Atlas experiment page reports 28,857 cells, while the selected
+28-cluster UMAP endpoint contains 28,856 clustered cells; both counts are recorded
+explicitly. No private expression matrix, barcode, prediction, model weight, or
 checkpoint is included.
 
 Rebuild from the official APIs:

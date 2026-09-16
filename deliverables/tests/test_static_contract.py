@@ -87,6 +87,8 @@ class StaticContractTests(unittest.TestCase):
         self.assertEqual("E-ENAD-52", public["dataset"]["atlas_accession"])
         self.assertEqual("GSE146035", public["dataset"]["geo_accession"])
         self.assertEqual(28, public["dataset"]["cluster_count"])
+        self.assertEqual(28857, public["atlas_reported_cells"])
+        self.assertEqual(28856, public["total_cells"])
         self.assertGreaterEqual(len(public["points"]), 1000)
         self.assertIn("not curated", public["dataset"]["notice"])
 

@@ -40,6 +40,7 @@ RECORDED_METRICS = {
     "cells_per_second": None,
     "celltype_L1_classes": None,
     "total_cells": PUBLIC["total_cells"],
+    "atlas_reported_cells": PUBLIC["atlas_reported_cells"],
     "subset_cells": PUBLIC["subset_cells"],
     "cluster_count": PUBLIC["dataset"]["cluster_count"],
     "limitation": (
@@ -123,6 +124,7 @@ def offline_agent(payload: dict) -> dict:
         "这是公开数据证据演示，未执行 Qwen 或 riceFM 实时推理。界面中的 UMAP、"
         "cluster ID 和 marker gene 来自 EMBL-EBI E-ENAD-52 / NCBI GSE146035。"
         f"Atlas cluster 是无监督分群编号，不是人工校订的细胞类型。官方数据包含 "
+        f"页面报告 {PUBLIC['atlas_reported_cells']} 个实验细胞，28-cluster 接口覆盖 "
         f"{PUBLIC['total_cells']} 个细胞；仓库内保留 {PUBLIC['subset_cells']} 个均匀"
         "抽样 UMAP 点和每个 cluster 的 marker 证据。该模式没有执行新的统计检验、"
         "riceFM 注释或 Qwen 生成，因此不能补充差异基因、通路或因果结论。"

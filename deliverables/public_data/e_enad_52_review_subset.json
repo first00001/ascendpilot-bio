@@ -14,6 +14,7 @@
     "cluster_count": 28,
     "notice": "Public Atlas clusters are unsupervised cluster identifiers, not curated biological cell-type labels."
   },
+  "atlas_reported_cells": 28857,
   "total_cells": 28856,
   "subset_cells": 1120,
   "cluster_sizes": {

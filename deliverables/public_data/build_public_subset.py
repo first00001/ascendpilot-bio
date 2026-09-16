@@ -13,6 +13,7 @@ from pathlib import Path
 ACCESSION = "E-ENAD-52"
 GEO_ACCESSION = "GSE146035"
 CLUSTERS = 28
+ATLAS_REPORTED_CELLS = 28857
 MAX_POINTS = 1120
 UMAP_URL = (
     "https://www.ebi.ac.uk/gxa/sc/json/cell-plots/E-ENAD-52/clusters/k/28"
@@ -119,6 +120,7 @@ def build_subset() -> dict:
                 "biological cell-type labels."
             ),
         },
+        "atlas_reported_cells": ATLAS_REPORTED_CELLS,
         "total_cells": sum(cluster_sizes.values()),
         "subset_cells": len(points),
         "cluster_sizes": cluster_sizes,
