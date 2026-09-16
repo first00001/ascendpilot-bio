@@ -37,3 +37,9 @@ deterministic, real-cell smoke test. Installation and service lifecycle are hand
 by `scripts/install.sh`, `scripts/start.sh`, `scripts/stop.sh`, and
 `scripts/status.sh`.
 
+For reviewers without the private model artifacts, authorized ZH11 inputs, or an
+Ascend environment, run `python deliverables/offline_demo.py`. This review mode uses
+a checked-in public subset of EMBL-EBI `E-ENAD-52` / NCBI `GSE146035`, is visibly
+labeled in the UI, and does not claim to execute Qwen, riceFM, or NPU inference.
+Atlas cluster IDs are shown as unsupervised clusters, not curated cell types. Use
+the real service for performance or private-environment scientific claims.

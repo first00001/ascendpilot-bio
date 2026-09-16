@@ -44,11 +44,27 @@ python benchmark.py --mode chat --runs 10 --warmup 2 --max-new-tokens 128
 
 浏览器访问 `http://127.0.0.1:8000/demo`。生产接口除 `/health`、`/version`、`/demo` 外均需 `x-api-key` 或 Bearer Token。
 
+### 无 NPU 环境的一键审查
+
+评委可在普通 Windows、Linux 或 macOS 电脑上使用 Python 3 直接启动离线证据演示，无需安装第三方依赖：
+
+```powershell
+./deliverables/run_offline_demo.ps1
+```
+
+```bash
+bash deliverables/run_offline_demo.sh
+```
+
+浏览器会打开 `http://127.0.0.1:8000/demo`。页面会明确显示“公开数据证据模式”：UMAP、28-cluster 分群和 marker genes 来自 EMBL-EBI `E-ENAD-52` / NCBI `GSE146035` 的公开水稻根尖单细胞数据；Atlas cluster 编号不是人工校订的细胞类型。性能和精度数字来自已保存的正式实验记录，该模式不会执行 Qwen、riceFM 或 Ascend NPU 实时推理。真实运行请使用上面的 Ascend 部署流程。
+
 ## 代码结构说明
 
 - `deliverables/qwen35-ascend-migration/`：环境检查、候选精度实测、部署策略选择、迁移验证和报告 Schema。
 - `deliverables/qwen35-mindspeed-training/`：官方赛题主 Skill，包含双卡训练启动和 AscendC/Triton 日志对齐。
 - `deliverables/plantcell-skill/`：标准 Skill、API 文档、JSON Schema、安装/启停/状态/健康检查/演示脚本。
+- `deliverables/public-rice-root-skill/`：无需私有数据和模型权重即可运行的公开根尖 cluster/marker 证据 Skill。
+- `deliverables/public_data/`：从 EMBL-EBI `E-ENAD-52` / NCBI `GSE146035` 官方接口生成的公开审查子集、来源和哈希。
 - `deliverables/skill/`：Qwen Agent 与 riceFM 适配器实现。
 - `deliverables/deployment/`：Qwen 服务端、部署脚本和性能升级脚本。
 - `deliverables/scripts/`：ZH11 构建、精度评测、性能压测、Agent 验收和环境检查脚本。
@@ -69,7 +85,9 @@ Qwen 在线平均 3.226 s，P95 3.247 s，19.86 tok/s，错误率 0；riceFM 热
 
 ## 数据说明
 
-ZH11 表达矩阵来自公司集群。未经数据所有者书面授权，不得将 `matrix.mtx.gz` 上传到竞赛平台或公开仓库；可保留脚本、哈希、元数据摘要和已生成的结果文件。
+在线 Ascend 扩展实验使用的私有 ZH11 表达矩阵来自公司集群。未经数据所有者书面授权，不得将其原始矩阵、逐细胞预测或 embedding 上传到竞赛平台或公开仓库。
+
+面向评委的可运行审查系统已改用公开的水稻根尖单细胞数据 `E-ENAD-52` / `GSE146035`。仓库内包含 1,120 个分层抽样 UMAP 点、28 个 Atlas cluster 的规模和 marker 证据，以及可从 EMBL-EBI 官方 API 重建该子集的脚本。Atlas cluster 编号不是人工校订的生物学细胞类型。
 
 ## PR 链接
 

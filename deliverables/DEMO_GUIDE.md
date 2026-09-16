@@ -30,17 +30,18 @@
 
 ## 3:05-4:20 PlantCell 扩展演示
 
-打开 `http://127.0.0.1:8000/demo`，确认顶部显示服务正常。依次完成：
+打开 `http://127.0.0.1:8000/demo`。无私有环境时确认顶部显示“公开数据证据模式”；Ascend 真机环境时确认显示“服务正常”。依次完成：
 
-1. 在 ZH11 UMAP 上悬停一个点，说明仅显示有坐标的细胞，缺失坐标不伪造。
-2. 选择一个预置细胞并点击“运行注释”，展示 riceFM 标签、置信度和最近参考细胞。
-3. 点击“生成分析”，展示 Qwen Planner、Evidence Store 和 Verifier；强调缺少证据时返回 `input_required`，不会编造 marker、差异基因或通路。
+1. 公开模式：在 E-ENAD-52 UMAP 上悬停一个真实公开细胞，展示 Atlas cluster；强调 cluster 编号不是人工细胞类型。
+2. 公开模式：选择一个公开细胞并点击“查看 cluster 证据”，展示 EMBL-EBI marker genes；说明未执行 riceFM。
+3. 真机模式：可改为展示 riceFM 标签、置信度和最近参考细胞，再运行 Qwen Planner、Evidence Store 和 Verifier。
+4. 点击“生成分析”，强调公开模式未执行 Qwen；真机模式缺少证据时返回 `input_required`，不会编造 marker、差异基因或通路。
 
 这一段只演示一次注释和一次问答，不在现场跑多轮 benchmark。
 
 ## 4:20-5:00 总结和边界
 
-总结三点：官方 0.8B 双 NPU 训练完成；DCP/Gloo 修复形成上游 PR；扩展场景验证了迁移、部署和证据约束闭环。明确 ZH11 原始数据受授权限制，仓库不包含原始矩阵、逐细胞预测、模型权重或 checkpoint 分片。
+总结三点：官方 0.8B 双 NPU 训练完成；DCP/Gloo 修复形成上游 PR；扩展场景验证了迁移、部署和证据约束闭环。公开演示使用 E-ENAD-52/GSE146035，私有 ZH11 原始数据仍受授权限制；仓库不包含私有原始矩阵、逐细胞预测、模型权重或 checkpoint 分片。
 
 ## 现场准备
 

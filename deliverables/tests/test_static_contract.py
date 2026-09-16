@@ -54,14 +54,53 @@ class StaticContractTests(unittest.TestCase):
         for element_id in ("migrationStatus", "precision", "memorySave", "qwenRate", "umap", "token", "annotate", "answer"):
             self.assertIn(f'id="{element_id}"', page)
 
-    def test_demo_sample_matrix_widths(self):
-        path = ROOT / "data/ZH11_riceFM_eval/demo_samples.json"
-        data = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(4, len(data["samples"]))
+    def test_offline_demo_sample_matrix_widths(self):
+        import importlib.util
+
+        path = ROOT / "offline_demo.py"
+        spec = importlib.util.spec_from_file_location("offline_demo", path)
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+        data = module.DEMO_SAMPLES
+        self.assertEqual("public-evidence", data["mode"])
+        self.assertGreaterEqual(len(data["samples"]), 4)
         for sample in data["samples"]:
             self.assertEqual(len(sample["genes"]), len(sample["counts"][0]))
             self.assertLessEqual(len(sample["genes"]), 512)
             self.assertTrue(all(value >= 0 for value in sample["counts"][0]))
+
+    def test_offline_demo_is_explicitly_non_inference(self):
+        source = (ROOT / "offline_demo.py").read_text(encoding="utf-8")
+        page = (ROOT / "demo/index.html").read_text(encoding="utf-8")
+        self.assertIn('MODE = "public-evidence"', source)
+        self.assertIn("no Qwen, riceFM, or NPU inference", source)
+        self.assertIn("公开数据证据模式", page)
+        self.assertIn("未执行 Qwen、riceFM 或 Ascend NPU 实时推理", page)
+
+    def test_public_dataset_has_provenance_and_real_points(self):
+        public = json.loads(
+            (ROOT / "public_data/e_enad_52_review_subset.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual("E-ENAD-52", public["dataset"]["atlas_accession"])
+        self.assertEqual("GSE146035", public["dataset"]["geo_accession"])
+        self.assertEqual(28, public["dataset"]["cluster_count"])
+        self.assertGreaterEqual(len(public["points"]), 1000)
+        self.assertIn("not curated", public["dataset"]["notice"])
+
+    def test_public_skill_is_independently_runnable(self):
+        skill = (ROOT / "public-rice-root-skill/SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        query = (ROOT / "public-rice-root-skill/scripts/query_cluster.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("E-ENAD-52", skill)
+        self.assertIn("GSE146035", skill)
+        self.assertIn('sub.add_parser("summary")', query)
+        self.assertIn('sub.add_parser("markers")', query)
 
     def test_benchmark_hits_model_endpoints(self):
         source = (ROOT / "benchmark.py").read_text(encoding="utf-8")

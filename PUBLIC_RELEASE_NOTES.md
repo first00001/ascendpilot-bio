@@ -20,7 +20,7 @@ Local path defaults in scripts/configuration describe the verified target. Adapt
 
 ## Known Limitations
 
-- Raw company data, expression demo samples and per-cell derived outputs are excluded. The biological demo needs authorized local assets.
+- Raw company data, private expression demo samples and private per-cell derived outputs are excluded. Reviewers can run the public-data demonstration with the checked-in `E-ENAD-52` / `GSE146035` subset; the full riceFM/Qwen NPU mode still requires separately authorized local assets and model weights.
 - The original static test `test_demo_sample_matrix_widths` depends on excluded real expression samples; do not interpret its absence as a failed model run.
 - The recorded DCP patch is preserved as measured evidence and validates synchronous save only. Its async CPU device_id change was not exercised and must not be advertised as async-save support.
 - DOCX files are updated but have not passed automatic visual rendering QA.
