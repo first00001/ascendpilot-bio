@@ -1,5 +1,7 @@
+import base64
 import csv
 import hashlib
+import hmac
 import json
 import os
 import secrets
@@ -39,6 +41,8 @@ RICEFM_PILOT_RESULT = (
 MIGRATION_REPORT = PLANTCELL_DIR / "results/migration/migration-report.json"
 DEMO_DIR = PLANTCELL_DIR / "demo"
 TOKEN_FILE = Path("/etc/qwen35.env")
+DEMO_SESSION_COOKIE = "plantcell-demo-session"
+DEMO_SESSION_TTL_SECONDS = 12 * 60 * 60
 RICEFM_CHECKPOINT_SHA256 = (
     "b6971934ea4bb5b3ec9e64feeecd90bb32c66aa0667cbd3115990afc68443361"
 )
@@ -546,6 +550,44 @@ def _api_token():
     return os.getenv("QWEN_API_TOKEN", "")
 
 
+def _is_loopback_request(request: Request):
+    return request.client is not None and request.client.host in {"127.0.0.1", "::1"}
+
+
+def _demo_session_value(issued_at=None):
+    expected = _api_token()
+    if not expected:
+        return ""
+    timestamp = int(time.time() if issued_at is None else issued_at)
+    payload = str(timestamp)
+    digest = hmac.new(
+        expected.encode("utf-8"),
+        f"plantcell-demo:{payload}".encode("ascii"),
+        hashlib.sha256,
+    ).digest()
+    signature = base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+    return f"{payload}.{signature}"
+
+
+def _valid_demo_session(request: Request):
+    if not _is_loopback_request(request):
+        return False
+    value = request.cookies.get(DEMO_SESSION_COOKIE, "")
+    try:
+        issued_at_text, supplied_signature = value.split(".", 1)
+        issued_at = int(issued_at_text)
+    except (TypeError, ValueError):
+        return False
+    age = int(time.time()) - issued_at
+    if age < -60 or age > DEMO_SESSION_TTL_SECONDS:
+        return False
+    expected_value = _demo_session_value(issued_at)
+    if not expected_value:
+        return False
+    expected_signature = expected_value.split(".", 1)[1]
+    return secrets.compare_digest(supplied_signature, expected_signature)
+
+
 PUBLIC_PATHS = {
     "/health",
     "/version",
@@ -570,7 +612,10 @@ async def api_auth(request: Request, call_next):
             auth = request.headers.get("authorization", "")
             supplied = auth[7:] if auth.lower().startswith("bearer ") else ""
         expected = _api_token()
-        if not expected or not secrets.compare_digest(supplied, expected):
+        token_valid = bool(
+            expected and supplied and secrets.compare_digest(supplied, expected)
+        )
+        if not token_valid and not _valid_demo_session(request):
             return JSONResponse({"detail": "Unauthorized"}, status_code=401)
     return await call_next(request)
 
@@ -628,11 +673,24 @@ def health():
 
 
 @APP.get("/demo", include_in_schema=False)
-def demo_page():
+def demo_page(request: Request):
     page = DEMO_DIR / "index.html"
     if not page.is_file():
         raise HTTPException(404, "demo page is not installed")
-    return FileResponse(page)
+    response = FileResponse(page)
+    if _is_loopback_request(request):
+        session_value = _demo_session_value()
+        if session_value:
+            response.set_cookie(
+                DEMO_SESSION_COOKIE,
+                session_value,
+                max_age=DEMO_SESSION_TTL_SECONDS,
+                httponly=True,
+                samesite="strict",
+                secure=False,
+                path="/",
+            )
+    return response
 
 
 @APP.get("/skills")

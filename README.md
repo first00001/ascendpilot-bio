@@ -41,7 +41,7 @@ python demo.py
 python benchmark.py --mode chat --runs 10 --warmup 2 --max-new-tokens 128
 ```
 
-浏览器访问 `http://127.0.0.1:8000/demo`。公开数据读取和 cluster/marker 证据查询无需 Token；`/chat`、`/agent/run`、上传与报告生成接口仍需 `x-api-key` 或 Bearer Token。
+浏览器通过 SSH 本地端口转发访问 `http://127.0.0.1:8000/demo` 时，服务会为本机连接签发短期 HttpOnly 演示会话，因此页面无需保存长期 Token。公开数据读取和 cluster/marker 证据查询无需 Token；页面之外的 `/chat`、`/agent/run`、上传与报告生成接口仍需 `x-api-key` 或 Bearer Token。
 
 服务器可运行 `deliverables/deployment/deploy_and_verify.sh` 切换到公开真机模式。该模式以 `E-ENAD-52` 驱动 UMAP、cluster 和 marker 证据，Qwen3.5-4B 在 Ascend `npu:0` 实时生成报告；riceFM 使用公开 `GSE232863/GSM8865415` 的 25 基因验证锚点子集，在 `npu:1` 实时生成 256 维 embedding。该 pilot 不是全转录组映射，也没有经过验证的细胞类型分类头，因此页面不会把 embedding 说成细胞类型预测。
 

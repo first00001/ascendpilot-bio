@@ -34,7 +34,7 @@
 
 1. 两种模式都可在 E-ENAD-52 UMAP 上悬停真实公开细胞，展示 Atlas cluster；强调 cluster 编号不是人工细胞类型。
 2. 普通电脑离线模式点击“查看 cluster 证据”展示官方 marker；Ascend 真机模式选择一个 `GSE232863` 公开细胞并点击“运行 riceFM embedding”，展示 256 维输出哈希、norm、NPU 设备和耗时。
-3. Ascend 真机模式：输入 API Token 后点击“生成分析”，展示 Qwen3.5-4B 在 `npu:0` 上的实时生成耗时和 tokens/s。
+3. Ascend 真机模式：通过 SSH 本地端口转发打开 `/demo` 后，服务会签发短期 HttpOnly 演示会话；无需在页面输入长期 API Token，直接点击“生成分析”，展示 Qwen3.5-4B 在 `npu:0` 上的实时生成耗时和 tokens/s。
 4. 展示 Agent 的 `[E1]` 数据集、`[E2]` marker、`[E3]` 执行边界引用。明确 riceFM 仅执行 `GSE232863` 的 25 基因锚点 compatibility pilot，不是全转录组映射或细胞类型分类。
 
 这一段只演示一次注释和一次问答，不在现场跑多轮 benchmark。
@@ -47,7 +47,7 @@
 
 - 提前开启 SSH 隧道并访问 `/health`、`/version` 和 `/demo`。
 - 确认 `/health` 返回 `mode=public-evidence`、`qwen_device=npu:0`、`ricefm_device=npu:1`，并确认 `ricefm_runtime=public-anchor-pilot-ready`。
-- API Token 只在本机输入，不出现在幻灯片、终端历史或录屏中。
+- 长期 API Token 不下发到演示页，也不进入浏览器存储、幻灯片、终端历史或录屏；直接 API 调用仍使用 `x-api-key` 或 Bearer Token。
 - 提前打开 README、PR #8、两份比较 JSON、两份日志末尾和演示页面，按顺序放在浏览器标签页中。
 - 关闭聊天软件通知，终端字体调大，浏览器缩放保持 100%。
 - 不要现场重跑完整 100 step；若必须展示实时执行，只运行 3-5 step 的独立 smoke test，并明确它不是正式性能结果。

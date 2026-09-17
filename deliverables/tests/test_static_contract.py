@@ -161,6 +161,15 @@ class StaticContractTests(unittest.TestCase):
         for term in ("AgentRunReq", "planner_fallback", "validate_plan", "verify_report", "input_required", "verification_failed", "rewrite_attempted", "agent_contract", "/agent/run"):
             self.assertIn(term, server + evaluator)
 
+    def test_demo_session_keeps_long_lived_token_server_side(self):
+        server = (ROOT / "deployment/qwen35_server.py").read_text(encoding="utf-8")
+        demo = (ROOT / "demo/index.html").read_text(encoding="utf-8")
+        self.assertIn("_valid_demo_session", server)
+        self.assertIn("httponly=True", server)
+        self.assertIn('samesite="strict"', server)
+        self.assertNotIn("sessionStorage.setItem('plantcell-token'", demo)
+        self.assertNotIn("sessionStorage.getItem('plantcell-token'", demo)
+
     def test_tsv_summary_uses_tab_delimiter(self):
         import sys
 
