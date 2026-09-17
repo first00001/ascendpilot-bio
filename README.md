@@ -38,11 +38,12 @@ ssh -N -L 8000:127.0.0.1:8000 \
   -J 'JUMP_USER:JUMP_TOKEN@JUMP_HOST:JUMP_PORT' root@TARGET_HOST
 export PLANTCELL_API_TOKEN='<与目标机 /etc/qwen35.env 相同的 Token>'
 python demo.py
-python benchmark.py --mode ricefm --runs 20 --warmup 2
 python benchmark.py --mode chat --runs 10 --warmup 2 --max-new-tokens 128
 ```
 
-浏览器访问 `http://127.0.0.1:8000/demo`。生产接口除 `/health`、`/version`、`/demo` 外均需 `x-api-key` 或 Bearer Token。
+浏览器访问 `http://127.0.0.1:8000/demo`。公开数据读取和 cluster/marker 证据查询无需 Token；`/chat`、`/agent/run`、上传与报告生成接口仍需 `x-api-key` 或 Bearer Token。
+
+服务器可运行 `deliverables/deployment/deploy_and_verify.sh` 切换到公开真机模式。该模式以 `E-ENAD-52` 驱动 UMAP、cluster 和 marker 证据，Qwen3.5-4B 在 Ascend `npu:0` 实时生成报告。由于公开数据使用 `Os...` 基因编号、现有 riceFM checkpoint 使用 `ZH...` 编号，且没有经过验证的一对一映射，公开模式会明确返回 `ricefm_executed: false`，不会用私有 ZH11 参考或伪装成 riceFM 推理。
 
 ### 无 NPU 环境的一键审查
 

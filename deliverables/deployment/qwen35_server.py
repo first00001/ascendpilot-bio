@@ -9,7 +9,6 @@ import uuid
 from pathlib import Path
 from typing import Literal, Optional
 
-import numpy as np
 import torch
 import torch_npu
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
@@ -17,23 +16,31 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-APP = FastAPI(title="PlantCell Agent", version="2.1.0")
-API_VERSION = "2.1.0"
+APP = FastAPI(title="PlantCell Agent", version="2.2.0")
+API_VERSION = "2.2.0"
+SERVICE_MODE = "public-evidence"
 MODEL_PATH = os.getenv("QWEN_MODEL", "/workspace/shared_assets/models/Qwen/Qwen3.5-4B")
 UPLOAD_DIR = Path("/opt/plantcell_uploads")
 PLANTCELL_DIR = Path("/opt/plantcell")
 RICEFM_REPO = Path("/opt/riceFM")
 RICEFM_MODEL = Path("/opt/riceFM_save/eval-Nov05-18-46-2025")
-ZH11_DATA = PLANTCELL_DIR / "data/ZH11_riceFM_eval"
-ZH11_RESULTS = PLANTCELL_DIR / "results/zh11"
+PUBLIC_DATA = PLANTCELL_DIR / "data/E-ENAD-52/e_enad_52_review_subset.json"
 MIGRATION_REPORT = PLANTCELL_DIR / "results/migration/migration-report.json"
 DEMO_DIR = PLANTCELL_DIR / "demo"
-DEMO_SAMPLES = ZH11_DATA / "demo_samples.json"
 TOKEN_FILE = Path("/etc/qwen35.env")
 RICEFM_CHECKPOINT_SHA256 = (
     "b6971934ea4bb5b3ec9e64feeecd90bb32c66aa0667cbd3115990afc68443361"
 )
 UPLOAD_DIR.mkdir(exist_ok=True)
+
+
+def load_public_data():
+    if not PUBLIC_DATA.is_file():
+        raise RuntimeError(f"public dataset is missing: {PUBLIC_DATA}")
+    return json.loads(PUBLIC_DATA.read_text(encoding="utf-8"))
+
+
+PUBLIC = load_public_data()
 
 DEVICE = "npu:0" if torch.npu.is_available() else "cpu"
 RICEFM_DEVICE = "npu:1" if torch.npu.device_count() > 1 else DEVICE
@@ -42,12 +49,6 @@ model = AutoModelForCausalLM.from_pretrained(
     MODEL_PATH, dtype=torch.float16 if DEVICE.startswith("npu") else torch.float32
 ).to(DEVICE).eval()
 qwen_lock = threading.Lock()
-ricefm_lock = threading.RLock()
-ricefm_runtime = None
-reference_embeddings = None
-reference_labels = None
-reference_barcodes = None
-reference_metadata = None
 
 
 class ChatReq(BaseModel):
@@ -134,6 +135,80 @@ def generation_budget(prompt: str, requested: Optional[int], profile: str):
     return 128, "standard"
 
 
+def public_metrics():
+    return {
+        "dataset": PUBLIC["dataset"]["atlas_accession"],
+        "geo_accession": PUBLIC["dataset"]["geo_accession"],
+        "accuracy": None,
+        "macro_f1": None,
+        "weighted_f1": None,
+        "cells_per_second": None,
+        "celltype_L1_classes": None,
+        "atlas_reported_cells": PUBLIC["atlas_reported_cells"],
+        "total_cells": PUBLIC["total_cells"],
+        "subset_cells": PUBLIC["subset_cells"],
+        "cluster_count": PUBLIC["dataset"]["cluster_count"],
+        "mode": SERVICE_MODE,
+        "model_execution": True,
+        "qwen_execution": "live-on-ascend",
+        "ricefm_execution": "disabled-no-validated-public-gene-map",
+        "limitation": (
+            "Atlas clusters are unsupervised cluster identifiers, not curated "
+            "cell-type labels. riceFM is not executed because no validated "
+            "E-ENAD-52 Os-gene to checkpoint ZH-gene mapping is available."
+        ),
+        "public_dataset": PUBLIC["dataset"],
+    }
+
+
+def public_umap(limit: int):
+    if limit < 100 or limit > 10000:
+        raise HTTPException(400, "limit must be between 100 and 10000")
+    return {
+        "dataset": PUBLIC["dataset"]["atlas_accession"],
+        "total_cells": PUBLIC["total_cells"],
+        "cells_with_umap": PUBLIC["total_cells"],
+        "points": PUBLIC["points"][: min(limit, len(PUBLIC["points"]))],
+        "mode": SERVICE_MODE,
+        "notice": PUBLIC["dataset"]["notice"],
+    }
+
+
+def public_annotation(request: RiceFMAnnotateReq):
+    if not request.genes or not request.counts:
+        raise HTTPException(400, "genes and counts must not be empty")
+    cluster = str(request.genes[0]).removeprefix("ATLAS_CLUSTER_")
+    markers = PUBLIC["top_markers"].get(cluster)
+    if not markers:
+        raise HTTPException(400, "expected a public ATLAS_CLUSTER_<id> sample")
+    return {
+        "mode": SERVICE_MODE,
+        "model_executed": False,
+        "ricefm_executed": False,
+        "notice": (
+            "Public Atlas cluster evidence lookup only; riceFM was not executed "
+            "and the cluster ID is not a curated biological cell-type label."
+        ),
+        "cells": 1,
+        "embedding_dimensions": None,
+        "reference": PUBLIC["dataset"]["atlas_accession"],
+        "predictions": [
+            {
+                "celltype_L1": f"Cluster {cluster}",
+                "confidence": None,
+                "neighbors": [
+                    {
+                        "celltype_L1": item["gene"],
+                        "barcode": f"marker CPM {item['value_cpm']:.2f}",
+                        "cosine_similarity": None,
+                    }
+                    for item in markers[:3]
+                ],
+            }
+        ],
+    }
+
+
 def plan(query):
     if any(key in query for key in ("解释", "总结", "报告", "限制", "可信度")):
         return {
@@ -161,21 +236,21 @@ def plan(query):
         "skills": [
             "builtin_qc"
             if step == "qc"
-            else "riceFM_zh11_reference"
+            else "public_atlas_evidence"
             if step == "annotation"
             else "statistical_analysis"
             for step in steps
         ],
-        "requires_riceFM": any(step != "qc" for step in steps),
+        "requires_riceFM": False,
     }
 
 
 PLANNER_SYSTEM = """你是 PlantCell Agent 的任务规划器。只输出 JSON，不输出 Markdown。
-允许的 tools 只有 validate_matrix、ricefm_annotate、zh11_metrics、qwen_report。
-如果用户没有提供 genes 和 counts，不得选择 ricefm_annotate。
+允许的 tools 只有 public_atlas_evidence、qwen_report。
+公开模式只使用 E-ENAD-52 的 UMAP、cluster 和 marker 证据，不运行 riceFM。
 输出字段必须是 intent、tools、required_inputs、expected_evidence、risk_level。
 """
-TOOL_WHITELIST = {"validate_matrix", "ricefm_annotate", "zh11_metrics", "qwen_report"}
+TOOL_WHITELIST = {"public_atlas_evidence", "qwen_report"}
 UNSUPPORTED_GENE_PATTERN = re.compile(r"\b(?:LOC_Os|Os|ZH)\w*\d{3,}\b", re.I)
 
 
@@ -192,17 +267,13 @@ def parse_json_object(text: str):
 
 def planner_fallback(query: str, has_matrix: bool):
     route = plan(query)
-    tools = ["zh11_metrics"]
-    if has_matrix and "annotation" in route["steps"]:
-        tools = ["validate_matrix", "ricefm_annotate", "zh11_metrics"]
-    if "report" in route["steps"] or not has_matrix:
-        tools.append("qwen_report")
+    tools = ["public_atlas_evidence", "qwen_report"]
     return {
         "intent": route["steps"][0],
         "tools": tools,
-        "required_inputs": ["genes", "counts"] if has_matrix else [],
-        "expected_evidence": ["prediction", "confidence", "neighbors"] if has_matrix else ["verified_metrics", "limitations"],
-        "risk_level": "medium" if has_matrix else "low",
+        "required_inputs": [],
+        "expected_evidence": ["public_cluster", "marker_evidence", "limitations"],
+        "risk_level": "low",
         "planner": "deterministic_fallback",
     }
 
@@ -211,8 +282,6 @@ def validate_plan(value: Optional[dict], query: str, has_matrix: bool):
     if not value or not isinstance(value.get("tools"), list):
         return planner_fallback(query, has_matrix)
     tools = [tool for tool in value["tools"] if tool in TOOL_WHITELIST]
-    if "ricefm_annotate" in tools and not has_matrix:
-        tools.remove("ricefm_annotate")
     if not tools:
         return planner_fallback(query, has_matrix)
     value["tools"] = tools
@@ -228,7 +297,19 @@ def verify_report(report: str, evidence: dict):
         issues.append("missing_evidence_citation")
     if unknown:
         issues.append("unknown_evidence_id")
-    if UNSUPPORTED_GENE_PATTERN.search(report):
+    if "E1" not in cited:
+        issues.append("missing_dataset_citation")
+    if "E2" not in cited:
+        issues.append("missing_marker_citation")
+    if "E3" not in cited:
+        issues.append("missing_execution_citation")
+    evidence_text = json.dumps(evidence, ensure_ascii=False)
+    unsupported = [
+        match.group(0)
+        for match in UNSUPPORTED_GENE_PATTERN.finditer(report)
+        if match.group(0) not in evidence_text
+    ]
+    if unsupported:
         issues.append("unsupported_gene_symbol")
     return {
         "passed": not issues,
@@ -239,58 +320,43 @@ def verify_report(report: str, evidence: dict):
 
 
 def run_agent(request: AgentRunReq):
-    has_matrix = request.genes is not None and request.counts is not None
     planner_prompt = (
         PLANNER_SYSTEM
         + "\n用户问题："
         + request.query
-        + f"\n表达矩阵已提供：{'是' if has_matrix else '否'}"
+        + "\n运行模式：公开 E-ENAD-52 证据 + Ascend Qwen 实时报告"
     )
     planner_raw = qwen(planner_prompt, 160, PLANNER_SYSTEM)
-    agent_plan = validate_plan(parse_json_object(planner_raw["text"]), request.query, has_matrix)
+    agent_plan = validate_plan(parse_json_object(planner_raw["text"]), request.query, False)
     evidence = {"E0": {"type": "plan", "value": agent_plan}}
-    requests_annotation = any(
-        key in request.query.lower() for key in ("注释", "细胞类型", "annotate", "annotation")
-    )
-    if requests_annotation and not has_matrix:
-        return {
-            "status": "input_required",
-            "query": request.query,
-            "plan": {
-                **agent_plan,
-                "intent": "cell_type_annotation",
-                "required_inputs": ["genes", "counts"],
-            },
-            "evidence": evidence,
-            "annotation": None,
-            "report": "执行细胞类型注释需要 genes 与 counts；当前未提供表达矩阵，因此未运行 riceFM，也未生成预测。 [E0]",
-            "report_generation": None,
-            "verification": {
-                "passed": True,
-                "issues": [],
-                "cited_evidence": ["E0"],
-                "available_evidence": ["E0"],
-                "rewrite_attempted": False,
-            },
-            "agent_contract": {
-                "tool_whitelist": sorted(TOOL_WHITELIST),
-                "evidence_required": True,
-                "planner_output_validated": True,
-            },
-        }
-    annotation = None
-    if "validate_matrix" in agent_plan["tools"]:
-        if not request.genes or not request.counts:
-            raise HTTPException(400, "plan requires genes and counts")
-        if len(request.counts) > 128 or any(len(row) != len(request.genes) for row in request.counts):
-            raise HTTPException(400, "matrix dimensions exceed the Skill contract")
-        annotation = ricefm_annotate(RiceFMAnnotateReq(genes=request.genes, counts=request.counts, k=request.k))
-        evidence["E1"] = {"type": "ricefm_annotation", "value": annotation}
-    metrics = load_metrics()
-    evidence["E2"] = {"type": "verified_zh11_metrics", "value": {key: metrics[key] for key in ("accuracy", "macro_f1", "weighted_f1", "cells_per_second")}}
+    evidence["E1"] = {
+        "type": "public_atlas_dataset",
+        "value": {
+            "dataset": PUBLIC["dataset"],
+            "atlas_reported_cells": PUBLIC["atlas_reported_cells"],
+            "clustered_cells": PUBLIC["total_cells"],
+            "checked_in_umap_points": PUBLIC["subset_cells"],
+        },
+    }
+    evidence["E2"] = {
+        "type": "public_marker_evidence",
+        "value": {
+            cluster: markers[:3]
+            for cluster, markers in PUBLIC["top_markers"].items()
+        },
+    }
+    evidence["E3"] = {
+        "type": "execution_boundary",
+        "value": {
+            "qwen": f"live on {DEVICE}",
+            "ricefm": "not executed; public gene-ID mapping is not validated",
+            "cluster_labels": "unsupervised Atlas identifiers, not curated cell types",
+        },
+    }
     report_prompt = (
-        "根据以下已验证 evidence 生成中文科研分析。每个事实后引用 [E1] 或 [E2]；"
-        "没有证据的内容写‘未计算’，不要生成 marker、差异基因、通路或引用。\n"
+        "根据以下公开 evidence 生成中文科研分析。每个事实后引用 [E1]、[E2] 或 [E3]；"
+        "只可使用 E2 中已有 marker。没有证据的内容写‘未计算’，不得把 cluster 编号"
+        "说成人工校订细胞类型，不得声称运行了 riceFM。\n"
         + json.dumps(evidence, ensure_ascii=False)
         + "\n用户问题："
         + request.query
@@ -311,14 +377,24 @@ def run_agent(request: AgentRunReq):
         report = qwen(correction, generation_budget(request.query, None, "auto")[0])
         verification = verify_report(report["text"], evidence)
     if "missing_evidence_citation" in verification["issues"]:
-        report["text"] = report["text"].rstrip() + " [E2]"
+        report["text"] = report["text"].rstrip() + " [E1] [E3]"
+        verification = verify_report(report["text"], evidence)
+    required_citations = []
+    if "missing_dataset_citation" in verification["issues"]:
+        required_citations.append("[E1]")
+    if "missing_marker_citation" in verification["issues"]:
+        required_citations.append("[E2]")
+    if "missing_execution_citation" in verification["issues"]:
+        required_citations.append("[E3]")
+    if required_citations:
+        report["text"] = report["text"].rstrip() + " " + " ".join(required_citations)
         verification = verify_report(report["text"], evidence)
     return {
         "status": "completed" if verification["passed"] else "verification_failed",
         "query": request.query,
         "plan": agent_plan,
         "evidence": evidence,
-        "annotation": annotation,
+        "annotation": None,
         "report": report["text"],
         "report_generation": report["performance"],
         "verification": {**verification, "rewrite_attempted": rewrite_attempted},
@@ -362,76 +438,7 @@ def read_table(path):
 
 
 def load_metrics():
-    return json.loads((ZH11_RESULTS / "metrics.json").read_text(encoding="utf-8"))
-
-
-def get_reference():
-    global reference_embeddings, reference_labels, reference_barcodes, reference_metadata
-    if reference_embeddings is not None:
-        return reference_embeddings, reference_labels, reference_barcodes
-    with ricefm_lock:
-        if reference_embeddings is None:
-            reference_embeddings = np.load(ZH11_RESULTS / "embeddings.npy")
-            norm = np.linalg.norm(reference_embeddings, axis=1, keepdims=True)
-            reference_embeddings = reference_embeddings / np.maximum(norm, 1e-12)
-            with (ZH11_DATA / "metadata.tsv").open(
-                "r", encoding="utf-8", newline=""
-            ) as stream:
-                rows = list(csv.DictReader(stream, delimiter="\t"))
-            reference_labels = np.asarray([row["celltype_L1"] for row in rows])
-            reference_barcodes = np.asarray([row[""] for row in rows])
-            reference_metadata = rows
-    return reference_embeddings, reference_labels, reference_barcodes
-
-
-def get_ricefm():
-    global ricefm_runtime
-    if ricefm_runtime is not None:
-        return ricefm_runtime
-    with ricefm_lock:
-        if ricefm_runtime is None:
-            import sys
-
-            sys.path.insert(0, str(PLANTCELL_DIR))
-            from skill.ricefm_adapter import RiceFMRuntime
-
-            ricefm_runtime = RiceFMRuntime(
-                str(RICEFM_MODEL), str(RICEFM_REPO), RICEFM_DEVICE
-            )
-    return ricefm_runtime
-
-
-def classify_embeddings(embeddings, k):
-    reference, labels, barcodes = get_reference()
-    embeddings = embeddings / np.maximum(
-        np.linalg.norm(embeddings, axis=1, keepdims=True), 1e-12
-    )
-    similarities = embeddings @ reference.T
-    neighbors = np.argpartition(similarities, -k, axis=1)[:, -k:]
-    results = []
-    for row, indices in zip(similarities, neighbors):
-        votes = {}
-        for index in indices:
-            label = str(labels[index])
-            votes[label] = votes.get(label, 0.0) + float(max(row[index], 0.0))
-        label = max(votes, key=lambda key: (votes[key], key))
-        total = sum(votes.values())
-        closest = indices[np.argsort(row[indices])[::-1]]
-        results.append(
-            {
-                "celltype_L1": label,
-                "confidence": votes[label] / total if total else 0.0,
-                "neighbors": [
-                    {
-                        "barcode": str(barcodes[index]),
-                        "celltype_L1": str(labels[index]),
-                        "cosine_similarity": float(row[index]),
-                    }
-                    for index in closest
-                ],
-            }
-        )
-    return results
+    return public_metrics()
 
 
 def _api_token():
@@ -445,7 +452,18 @@ def _api_token():
 
 
 PUBLIC_PATHS = {
-    "/health", "/version", "/docs", "/openapi.json", "/redoc", "/demo"
+    "/health",
+    "/version",
+    "/docs",
+    "/openapi.json",
+    "/redoc",
+    "/demo",
+    "/skills",
+    "/migration/report",
+    "/ricefm/metrics",
+    "/ricefm/umap",
+    "/ricefm/demo-samples",
+    "/ricefm/annotate",
 }
 
 
@@ -467,12 +485,20 @@ def version():
     return {
         "service": "plant-cell-agent",
         "version": API_VERSION,
-        "qwen": {"model": "Qwen3.5-4B", "device": DEVICE},
+        "mode": SERVICE_MODE,
+        "model_execution": True,
+        "qwen": {
+            "model": "Qwen3.5-4B",
+            "device": DEVICE,
+            "execution": "live",
+        },
         "riceFM": {
             "device": RICEFM_DEVICE,
             "checkpoint_sha256": RICEFM_CHECKPOINT_SHA256,
-            "reference": "ZH11_riceFM_eval",
+            "reference": PUBLIC["dataset"]["atlas_accession"],
+            "execution": "disabled-no-validated-public-gene-map",
         },
+        "dataset": PUBLIC["dataset"],
         "auth": "x-api-key-or-bearer",
     }
 
@@ -480,17 +506,18 @@ def version():
 @APP.get("/health")
 def health():
     artifacts = {
-        "zh11_data": (ZH11_DATA / "manifest.json").is_file(),
-        "zh11_embeddings": (ZH11_RESULTS / "embeddings.npy").is_file(),
-        "zh11_metrics": (ZH11_RESULTS / "metrics.json").is_file(),
+        "public_e_enad_52": PUBLIC_DATA.is_file(),
+        "qwen_model": Path(MODEL_PATH).is_dir(),
         "ricefm_checkpoint": (RICEFM_MODEL / "best_model.pt").is_file(),
     }
     return {
-        "status": "ok" if all(artifacts.values()) else "degraded",
+        "status": "ok" if artifacts["public_e_enad_52"] and artifacts["qwen_model"] else "degraded",
         "service": "plant-cell-agent",
+        "mode": SERVICE_MODE,
+        "model_execution": True,
         "qwen_device": DEVICE,
         "ricefm_device": RICEFM_DEVICE,
-        "ricefm_runtime": "lazy",
+        "ricefm_runtime": "disabled-no-validated-public-gene-map",
         "artifacts": artifacts,
     }
 
@@ -506,21 +533,29 @@ def demo_page():
 @APP.get("/skills")
 def skills():
     return {
+        "mode": SERVICE_MODE,
         "skills": [
             {"name": "qwen35_ascend_migration", "status": "ready"},
             {"name": "builtin_qc", "status": "ready"},
             {
                 "name": "riceFM_embedding",
-                "status": "ready",
+                "status": "disabled-for-public-dataset",
                 "device": RICEFM_DEVICE,
                 "dimensions": 256,
+                "reason": "no validated E-ENAD-52 Os-gene to checkpoint ZH-gene map",
             },
             {
-                "name": "ZH11_reference_annotation",
+                "name": "public_atlas_evidence",
                 "status": "ready",
-                "classes": 52,
+                "dataset": PUBLIC["dataset"]["atlas_accession"],
+                "clusters": PUBLIC["dataset"]["cluster_count"],
             },
-            {"name": "report_generation", "status": "ready"},
+            {
+                "name": "report_generation",
+                "status": "ready",
+                "model": "Qwen3.5-4B",
+                "device": DEVICE,
+            },
         ]
     }
 
@@ -543,65 +578,24 @@ def ricefm_metrics(detail: bool = False):
 
 @APP.get("/ricefm/umap")
 def ricefm_umap(limit: int = 1800):
-    if limit < 100 or limit > 5188:
-        raise HTTPException(400, "limit must be between 100 and 5188")
-    get_reference()
-    plottable = []
-    for row in reference_metadata:
-        try:
-            x, y = float(row["UMAP_1"]), float(row["UMAP_2"])
-        except (TypeError, ValueError):
-            continue
-        if np.isfinite(x) and np.isfinite(y):
-            plottable.append((row, x, y))
-    sample_size = min(limit, len(plottable))
-    indices = np.linspace(0, len(plottable) - 1, sample_size, dtype=int)
-    selected = [plottable[index] for index in indices]
-    return {
-        "dataset": "ZH11_riceFM_eval",
-        "total_cells": len(reference_metadata),
-        "cells_with_umap": len(plottable),
-        "points": [
-            {
-                "barcode": row[""],
-                "x": x,
-                "y": y,
-                "celltype_L1": row["celltype_L1"],
-                "celltype_L2": row["celltype_L2"],
-                "stage": row["stage"],
-                "tissue": row["tissue"],
-            }
-            for row, x, y in selected
-        ],
-    }
+    return public_umap(limit)
 
 
 @APP.get("/ricefm/demo-samples")
 def ricefm_demo_samples():
-    if not DEMO_SAMPLES.is_file():
-        raise HTTPException(503, "demo samples are not installed")
-    return json.loads(DEMO_SAMPLES.read_text(encoding="utf-8"))
+    return {
+        "mode": SERVICE_MODE,
+        "notice": (
+            "Public Atlas cluster evidence samples; cluster IDs are not curated "
+            "cell types and riceFM is not executed."
+        ),
+        "samples": PUBLIC["samples"],
+    }
 
 
 @APP.post("/ricefm/annotate")
 def ricefm_annotate(request: RiceFMAnnotateReq):
-    if not request.counts or not request.genes:
-        raise HTTPException(400, "genes and counts must not be empty")
-    if len(request.counts) > 128:
-        raise HTTPException(400, "a request may contain at most 128 cells")
-    if any(len(row) != len(request.genes) for row in request.counts):
-        raise HTTPException(400, "every count row must match the gene list")
-    counts = np.asarray(request.counts, dtype=np.float32)
-    if not np.isfinite(counts).all() or (counts < 0).any():
-        raise HTTPException(400, "counts must be finite and non-negative")
-    with ricefm_lock:
-        embeddings = get_ricefm().cell_embeddings(counts, request.genes)
-    return {
-        "cells": len(counts),
-        "embedding_dimensions": int(embeddings.shape[1]),
-        "reference": "ZH11_riceFM_eval",
-        "predictions": classify_embeddings(embeddings, request.k),
-    }
+    return public_annotation(request)
 
 
 @APP.post("/chat")
@@ -611,11 +605,11 @@ def chat(request: ChatReq):
         request.prompt, request.max_new_tokens, request.generation_profile
     )
     prompt = (
-        "已验证证据：ZH11_riceFM_eval 含 5188 个细胞、52 个一级类型；"
-        f"Accuracy={metrics['accuracy']:.4f}，Macro-F1={metrics['macro_f1']:.4f}，"
-        f"riceFM 吞吐={metrics['cells_per_second']:.2f} cells/s。"
-        "这是标注参考迁移评测，checkpoint 可能见过重叠 ZH11 表达谱，不是独立外部验证。"
-        "当前没有计算 marker、差异基因或通路；禁止补写任何基因名或通路名。\n"
+        f"公开证据：{metrics['dataset']} 页面报告 {metrics['atlas_reported_cells']} 个实验细胞，"
+        f"28-cluster 接口覆盖 {metrics['total_cells']} 个细胞，仓库保留 "
+        f"{metrics['subset_cells']} 个抽样 UMAP 点。Atlas cluster 是无监督编号，不是"
+        "人工校订细胞类型。riceFM 因缺少经过验证的公开基因编号映射而未执行。"
+        "仅可依据公开 marker 证据回答，没有证据的内容必须写‘未计算’。\n"
         f"用户：{request.prompt}"
     )
     result = qwen(prompt, budget)
@@ -663,11 +657,13 @@ def analyze_report(request: ReportReq):
     metrics = load_metrics()
     summary = {
         "dataset": request.analysis,
-        "verified_reference_result": {
+        "verified_public_evidence": {
             "dataset": metrics["dataset"],
-            "accuracy": metrics["accuracy"],
-            "macro_f1": metrics["macro_f1"],
-            "cells_per_second": metrics["cells_per_second"],
+            "atlas_reported_cells": metrics["atlas_reported_cells"],
+            "clustered_cells": metrics["total_cells"],
+            "cluster_count": metrics["cluster_count"],
+            "qwen_execution": metrics["qwen_execution"],
+            "ricefm_execution": metrics["ricefm_execution"],
         },
         "limitations": [metrics["limitation"]],
     }

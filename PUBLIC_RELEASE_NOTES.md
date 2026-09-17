@@ -20,10 +20,10 @@ Local path defaults in scripts/configuration describe the verified target. Adapt
 
 ## Known Limitations
 
-- Raw company data, private expression demo samples and private per-cell derived outputs are excluded. Reviewers can run the public-data demonstration with the checked-in `E-ENAD-52` / `GSE146035` subset; the full riceFM/Qwen NPU mode still requires separately authorized local assets and model weights.
-- The original static test `test_demo_sample_matrix_widths` depends on excluded real expression samples; do not interpret its absence as a failed model run.
+- Raw company data, private expression demo samples and private per-cell derived outputs are excluded. Reviewers can run the checked-in `E-ENAD-52` / `GSE146035` evidence mode offline. On an authorized Ascend host with Qwen weights, `deliverables/deployment/qwen35_server.py` provides live Qwen/NPU report generation over the same public evidence. riceFM remains disabled in public mode because no validated `Os...` to checkpoint `ZH...` gene-ID mapping is available.
+- Public cluster evidence samples use the synthetic `ATLAS_CLUSTER_<id>` request contract only to select official marker evidence; they are not expression profiles and must not be described as riceFM inputs.
 - The recorded DCP patch is preserved as measured evidence and validates synchronous save only. Its async CPU device_id change was not exercised and must not be advertised as async-save support.
 - DOCX files are updated but have not passed automatic visual rendering QA.
-- No repository push or PR has been performed; README PR placeholders are not real links.
+- Project repository: `first00001/ascendpilot-bio`. MindSpeed-MM fix: upstream PR #8 from branch `qwen35-08b-ascendc-gloo`.
 
 Reports are in `reports/pdf/` and `reports/docx/`, not the private workspace's `output/` paths mentioned in historical notes. Do not upload private source snapshots or the full competition ZIP as additional repository contents.

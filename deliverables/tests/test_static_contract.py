@@ -112,8 +112,9 @@ class StaticContractTests(unittest.TestCase):
     def test_chat_has_evidence_boundary(self):
         source = (ROOT / "deployment/qwen35_server.py").read_text(encoding="utf-8")
         self.assertIn("Never invent", source)
-        self.assertIn("禁止补写任何基因名或通路名", source)
-        self.assertIn("不是独立外部验证", source)
+        self.assertIn("public_atlas_evidence", source)
+        self.assertIn("riceFM is not executed", source)
+        self.assertIn("missing_execution_citation", source)
         self.assertIn("generation_budget", source)
         self.assertIn('Literal["auto", "fixed"]', source)
 
