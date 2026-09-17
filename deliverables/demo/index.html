@@ -42,22 +42,22 @@
     </section>
     <div class="workspace">
       <section class="panel">
-        <div class="panel-head"><h2 id="umapTitle">PlantCell 场景验证 · ZH11 UMAP</h2><small id="pointCount">-- points</small></div>
+        <div class="panel-head"><h2 id="umapTitle">公开水稻根尖 UMAP · E-ENAD-52</h2><small id="pointCount">-- points</small></div>
         <div class="canvas-wrap"><canvas id="umap"></canvas><div id="tip" class="tooltip"></div></div>
       </section>
       <div class="side">
         <section class="panel">
           <div class="panel-head"><h2 id="annotationTitle">riceFM 公开细胞 embedding</h2><small id="annotationMethod">25-gene anchor pilot</small></div>
           <div class="controls">
-            <div class="field"><label id="sampleLabel" for="sample">ZH11 预置细胞</label><select id="sample"><option>连接后加载</option></select></div>
-            <div class="row"><button id="annotate" class="btn primary" disabled>运行注释</button><button id="clear" class="btn secondary">清除结果</button></div>
+            <div class="field"><label id="sampleLabel" for="sample">公开数据样本</label><select id="sample"><option>连接后加载</option></select></div>
+            <div class="row"><button id="annotate" class="btn primary" disabled>运行公开数据分析</button><button id="clear" class="btn secondary">清除结果</button></div>
           </div>
           <div id="annotation" class="result"><div class="empty">尚未运行</div></div>
         </section>
         <section class="panel">
           <div class="panel-head"><h2>Qwen3.5 科研助手</h2><small id="assistantDevice">npu:0</small></div>
           <div class="chat-body">
-            <div class="field"><textarea id="prompt">结合 ZH11 评测结果，解释 riceFM 标签迁移的可信度与限制。</textarea></div>
+            <div class="field"><textarea id="prompt">解释公开水稻单细胞证据与 riceFM embedding pilot 的用途和限制。</textarea></div>
             <button id="ask" class="btn primary" disabled>生成分析</button>
             <div id="answer" class="result chat-output"><span class="empty">等待提问</span></div>
           </div>
