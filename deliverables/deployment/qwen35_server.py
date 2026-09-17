@@ -1,14 +1,17 @@
 import csv
+import hashlib
 import json
 import os
 import secrets
 import re
+import sys
 import threading
 import time
 import uuid
 from pathlib import Path
 from typing import Literal, Optional
 
+import numpy as np
 import torch
 import torch_npu
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
@@ -16,8 +19,8 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-APP = FastAPI(title="PlantCell Agent", version="2.2.0")
-API_VERSION = "2.2.0"
+APP = FastAPI(title="PlantCell Agent", version="2.3.0")
+API_VERSION = "2.3.0"
 SERVICE_MODE = "public-evidence"
 MODEL_PATH = os.getenv("QWEN_MODEL", "/workspace/shared_assets/models/Qwen/Qwen3.5-4B")
 UPLOAD_DIR = Path("/opt/plantcell_uploads")
@@ -25,6 +28,14 @@ PLANTCELL_DIR = Path("/opt/plantcell")
 RICEFM_REPO = Path("/opt/riceFM")
 RICEFM_MODEL = Path("/opt/riceFM_save/eval-Nov05-18-46-2025")
 PUBLIC_DATA = PLANTCELL_DIR / "data/E-ENAD-52/e_enad_52_review_subset.json"
+RICEFM_PILOT_INPUT = (
+    PLANTCELL_DIR
+    / "data/ricefm-public-candidate/gse232863_ricefm_anchor_pilot.json"
+)
+RICEFM_PILOT_RESULT = (
+    PLANTCELL_DIR
+    / "data/ricefm-public-candidate/gse232863_ricefm_anchor_pilot_result.json"
+)
 MIGRATION_REPORT = PLANTCELL_DIR / "results/migration/migration-report.json"
 DEMO_DIR = PLANTCELL_DIR / "demo"
 TOKEN_FILE = Path("/etc/qwen35.env")
@@ -40,7 +51,15 @@ def load_public_data():
     return json.loads(PUBLIC_DATA.read_text(encoding="utf-8"))
 
 
+def load_optional_json(path: Path):
+    if not path.is_file():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 PUBLIC = load_public_data()
+RICEFM_PILOT = load_optional_json(RICEFM_PILOT_INPUT)
+RICEFM_PILOT_EVIDENCE = load_optional_json(RICEFM_PILOT_RESULT)
 
 DEVICE = "npu:0" if torch.npu.is_available() else "cpu"
 RICEFM_DEVICE = "npu:1" if torch.npu.device_count() > 1 else DEVICE
@@ -49,6 +68,24 @@ model = AutoModelForCausalLM.from_pretrained(
     MODEL_PATH, dtype=torch.float16 if DEVICE.startswith("npu") else torch.float32
 ).to(DEVICE).eval()
 qwen_lock = threading.Lock()
+ricefm_load_lock = threading.Lock()
+ricefm_inference_lock = threading.Lock()
+ricefm_runtime = None
+
+
+def get_ricefm_runtime():
+    global ricefm_runtime
+    if ricefm_runtime is None:
+        with ricefm_load_lock:
+            if ricefm_runtime is None:
+                if str(PLANTCELL_DIR) not in sys.path:
+                    sys.path.insert(0, str(PLANTCELL_DIR))
+                from skill.ricefm_adapter import RiceFMRuntime
+
+                ricefm_runtime = RiceFMRuntime(
+                    str(RICEFM_MODEL), str(RICEFM_REPO), RICEFM_DEVICE
+                )
+    return ricefm_runtime
 
 
 class ChatReq(BaseModel):
@@ -136,13 +173,19 @@ def generation_budget(prompt: str, requested: Optional[int], profile: str):
 
 
 def public_metrics():
+    pilot_ready = RICEFM_PILOT is not None and RICEFM_PILOT_EVIDENCE is not None
+    pilot_speed = (
+        RICEFM_PILOT_EVIDENCE["timing_seconds"]["cells_per_second"]
+        if pilot_ready
+        else None
+    )
     return {
         "dataset": PUBLIC["dataset"]["atlas_accession"],
         "geo_accession": PUBLIC["dataset"]["geo_accession"],
         "accuracy": None,
         "macro_f1": None,
         "weighted_f1": None,
-        "cells_per_second": None,
+        "cells_per_second": pilot_speed,
         "celltype_L1_classes": None,
         "atlas_reported_cells": PUBLIC["atlas_reported_cells"],
         "total_cells": PUBLIC["total_cells"],
@@ -151,12 +194,18 @@ def public_metrics():
         "mode": SERVICE_MODE,
         "model_execution": True,
         "qwen_execution": "live-on-ascend",
-        "ricefm_execution": "disabled-no-validated-public-gene-map",
+        "ricefm_execution": (
+            "public-anchor-pilot-on-ascend"
+            if pilot_ready
+            else "disabled-pilot-artifact-missing"
+        ),
         "limitation": (
             "Atlas clusters are unsupervised cluster identifiers, not curated "
-            "cell-type labels. riceFM is not executed because no validated "
-            "E-ENAD-52 Os-gene to checkpoint ZH-gene mapping is available."
+            "cell-type labels. riceFM execution uses a validated 25-gene anchor "
+            "subset from public GSE232863 data; it is not a whole-transcriptome "
+            "mapping and the checkpoint has no trained classification head."
         ),
+        "ricefm_pilot": RICEFM_PILOT_EVIDENCE,
         "public_dataset": PUBLIC["dataset"],
     }
 
@@ -177,32 +226,73 @@ def public_umap(limit: int):
 def public_annotation(request: RiceFMAnnotateReq):
     if not request.genes or not request.counts:
         raise HTTPException(400, "genes and counts must not be empty")
-    cluster = str(request.genes[0]).removeprefix("ATLAS_CLUSTER_")
-    markers = PUBLIC["top_markers"].get(cluster)
-    if not markers:
-        raise HTTPException(400, "expected a public ATLAS_CLUSTER_<id> sample")
+    if RICEFM_PILOT is None:
+        raise HTTPException(503, "riceFM public pilot input is not installed")
+    if len(request.counts) > 256:
+        raise HTTPException(400, "at most 256 cells are accepted per request")
+    if any(len(row) != len(request.genes) for row in request.counts):
+        raise HTTPException(400, "each count row must match the genes length")
+    allowed = set(RICEFM_PILOT["genes"])
+    unknown = sorted(set(request.genes) - allowed)
+    if unknown:
+        raise HTTPException(
+            400,
+            "public pilot accepts only the validated 25-gene anchor subset; "
+            f"unsupported genes: {unknown[:5]}",
+        )
+    counts = np.asarray(request.counts, dtype=np.float32)
+    if not np.isfinite(counts).all() or (counts < 0).any():
+        raise HTTPException(400, "counts must be finite and non-negative")
+    started = time.perf_counter()
+    try:
+        with ricefm_inference_lock:
+            embeddings = get_ricefm_runtime().cell_embeddings(
+                counts, request.genes, batch_size=min(16, len(counts))
+            )
+            if RICEFM_DEVICE.startswith("npu"):
+                torch.npu.synchronize()
+    except Exception as exc:
+        raise HTTPException(503, f"riceFM inference failed: {exc}") from exc
+    elapsed = time.perf_counter() - started
+    norms = np.linalg.norm(embeddings, axis=1)
+    digest = hashlib.sha256(
+        np.ascontiguousarray(embeddings).tobytes()
+    ).hexdigest()
     return {
         "mode": SERVICE_MODE,
-        "model_executed": False,
-        "ricefm_executed": False,
+        "model_executed": True,
+        "ricefm_executed": True,
         "notice": (
-            "Public Atlas cluster evidence lookup only; riceFM was not executed "
-            "and the cluster ID is not a curated biological cell-type label."
+            "riceFM generated cell embeddings on the validated public 25-gene "
+            "anchor subset. No cell-type classification was performed."
         ),
-        "cells": 1,
-        "embedding_dimensions": None,
-        "reference": PUBLIC["dataset"]["atlas_accession"],
+        "cells": int(embeddings.shape[0]),
+        "embedding_dimensions": int(embeddings.shape[1]),
+        "embedding_sha256": digest,
+        "embedding_norm": {
+            "min": float(norms.min()),
+            "mean": float(norms.mean()),
+            "max": float(norms.max()),
+        },
+        "performance": {
+            "seconds": elapsed,
+            "cells_per_second": len(embeddings) / elapsed if elapsed else None,
+            "device": RICEFM_DEVICE,
+        },
+        "classification_head": False,
+        "reference": "GSE232863/GSM8865415",
+        "mapping_scope": "25-gene validated anchor pilot",
         "predictions": [
             {
-                "celltype_L1": f"Cluster {cluster}",
+                "celltype_L1": "riceFM embedding generated",
                 "confidence": None,
                 "neighbors": [
                     {
-                        "celltype_L1": item["gene"],
-                        "barcode": f"marker CPM {item['value_cpm']:.2f}",
+                        "celltype_L1": "embedding norm",
+                        "barcode": f"{norm:.6f}",
                         "cosine_similarity": None,
                     }
-                    for item in markers[:3]
+                    for norm in norms[:3]
                 ],
             }
         ],
@@ -247,7 +337,8 @@ def plan(query):
 
 PLANNER_SYSTEM = """你是 PlantCell Agent 的任务规划器。只输出 JSON，不输出 Markdown。
 允许的 tools 只有 public_atlas_evidence、qwen_report。
-公开模式只使用 E-ENAD-52 的 UMAP、cluster 和 marker 证据，不运行 riceFM。
+公开模式使用 E-ENAD-52 的 UMAP、cluster 和 marker 证据；riceFM 仅运行
+GSE232863 的 25 基因公开锚点 embedding pilot，不执行细胞类型分类。
 输出字段必须是 intent、tools、required_inputs、expected_evidence、risk_level。
 """
 TOOL_WHITELIST = {"public_atlas_evidence", "qwen_report"}
@@ -349,14 +440,18 @@ def run_agent(request: AgentRunReq):
         "type": "execution_boundary",
         "value": {
             "qwen": f"live on {DEVICE}",
-            "ricefm": "not executed; public gene-ID mapping is not validated",
+            "ricefm": (
+                "executed on Ascend for a validated 25-gene GSE232863 anchor "
+                "pilot; no classification head"
+            ),
             "cluster_labels": "unsupervised Atlas identifiers, not curated cell types",
         },
     }
     report_prompt = (
         "根据以下公开 evidence 生成中文科研分析。每个事实后引用 [E1]、[E2] 或 [E3]；"
         "只可使用 E2 中已有 marker。没有证据的内容写‘未计算’，不得把 cluster 编号"
-        "说成人工校订细胞类型，不得声称运行了 riceFM。\n"
+        "说成人工校订细胞类型，不得把 riceFM embedding pilot 说成细胞类型预测或"
+        "全转录组验证。\n"
         + json.dumps(evidence, ensure_ascii=False)
         + "\n用户问题："
         + request.query
@@ -495,8 +590,12 @@ def version():
         "riceFM": {
             "device": RICEFM_DEVICE,
             "checkpoint_sha256": RICEFM_CHECKPOINT_SHA256,
-            "reference": PUBLIC["dataset"]["atlas_accession"],
-            "execution": "disabled-no-validated-public-gene-map",
+            "reference": "GSE232863/GSM8865415",
+            "execution": (
+                "public-anchor-pilot-on-ascend"
+                if RICEFM_PILOT_EVIDENCE is not None
+                else "disabled-pilot-artifact-missing"
+            ),
         },
         "dataset": PUBLIC["dataset"],
         "auth": "x-api-key-or-bearer",
@@ -509,15 +608,21 @@ def health():
         "public_e_enad_52": PUBLIC_DATA.is_file(),
         "qwen_model": Path(MODEL_PATH).is_dir(),
         "ricefm_checkpoint": (RICEFM_MODEL / "best_model.pt").is_file(),
+        "ricefm_public_pilot_input": RICEFM_PILOT_INPUT.is_file(),
+        "ricefm_public_pilot_result": RICEFM_PILOT_RESULT.is_file(),
     }
     return {
-        "status": "ok" if artifacts["public_e_enad_52"] and artifacts["qwen_model"] else "degraded",
+        "status": "ok" if all(artifacts.values()) else "degraded",
         "service": "plant-cell-agent",
         "mode": SERVICE_MODE,
         "model_execution": True,
         "qwen_device": DEVICE,
         "ricefm_device": RICEFM_DEVICE,
-        "ricefm_runtime": "disabled-no-validated-public-gene-map",
+        "ricefm_runtime": (
+            "public-anchor-pilot-ready"
+            if RICEFM_PILOT_EVIDENCE is not None
+            else "disabled-pilot-artifact-missing"
+        ),
         "artifacts": artifacts,
     }
 
@@ -539,10 +644,16 @@ def skills():
             {"name": "builtin_qc", "status": "ready"},
             {
                 "name": "riceFM_embedding",
-                "status": "disabled-for-public-dataset",
+                "status": (
+                    "public-anchor-pilot-ready"
+                    if RICEFM_PILOT_EVIDENCE is not None
+                    else "disabled-pilot-artifact-missing"
+                ),
                 "device": RICEFM_DEVICE,
                 "dimensions": 256,
-                "reason": "no validated E-ENAD-52 Os-gene to checkpoint ZH-gene map",
+                "reference": "GSE232863/GSM8865415",
+                "mapping_scope": "25-gene validated anchor subset",
+                "classification_head": False,
             },
             {
                 "name": "public_atlas_evidence",
@@ -583,13 +694,25 @@ def ricefm_umap(limit: int = 1800):
 
 @APP.get("/ricefm/demo-samples")
 def ricefm_demo_samples():
+    if RICEFM_PILOT is None:
+        raise HTTPException(503, "riceFM public pilot input is not installed")
     return {
         "mode": SERVICE_MODE,
         "notice": (
-            "Public Atlas cluster evidence samples; cluster IDs are not curated "
-            "cell types and riceFM is not executed."
+            "Public GSE232863 cells mapped through the validated 25-gene anchor "
+            "subset. The action generates embeddings, not cell-type labels."
         ),
-        "samples": PUBLIC["samples"],
+        "samples": [
+            {
+                "name": f"GSE232863 E10_1 · {cell['barcode']}",
+                "barcode": cell["barcode"],
+                "genes": RICEFM_PILOT["genes"],
+                "counts": [cell["counts"]],
+                "detected_anchor_genes": cell["detected_anchor_genes"],
+                "anchor_umi_total": cell["anchor_umi_total"],
+            }
+            for cell in RICEFM_PILOT["cells"][:12]
+        ],
     }
 
 
@@ -608,7 +731,8 @@ def chat(request: ChatReq):
         f"公开证据：{metrics['dataset']} 页面报告 {metrics['atlas_reported_cells']} 个实验细胞，"
         f"28-cluster 接口覆盖 {metrics['total_cells']} 个细胞，仓库保留 "
         f"{metrics['subset_cells']} 个抽样 UMAP 点。Atlas cluster 是无监督编号，不是"
-        "人工校订细胞类型。riceFM 因缺少经过验证的公开基因编号映射而未执行。"
+        "人工校订细胞类型。riceFM 已在 GSE232863 的 25 基因公开锚点子集上执行"
+        " embedding pilot，但不是全转录组映射，也没有细胞类型分类头。"
         "仅可依据公开 marker 证据回答，没有证据的内容必须写‘未计算’。\n"
         f"用户：{request.prompt}"
     )

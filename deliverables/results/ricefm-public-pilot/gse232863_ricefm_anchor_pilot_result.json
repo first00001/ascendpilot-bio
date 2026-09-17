@@ -1,0 +1,173 @@
+{
+  "schema": "ricefm-public-anchor-pilot-result-v1",
+  "timestamp_utc": "2026-09-17T10:32:13Z",
+  "source": {
+    "geo_accession": "GSE232863",
+    "gsm_accession": "GSM8865415",
+    "sample": "E10_1",
+    "h5_sha256": "e11a4890457c8537df73e2945c989b39749d4534fff6979c36147cb2c9e37a46",
+    "cells_total": 17133
+  },
+  "mapping": {
+    "method": "riceFM official tutorial gene anchors cross-referenced to Oryzabase RAP IDs; chromosome-concordant one-to-one pilot subset",
+    "full_genome_mapping": false,
+    "genes": [
+      {
+        "ricefm_id": "ZH11G07370",
+        "rap_id": "Os11g0207900",
+        "symbol": "OsYUC14"
+      },
+      {
+        "ricefm_id": "ZH01G28140",
+        "rap_id": "Os01g0645400",
+        "symbol": "OsYUC1"
+      },
+      {
+        "ricefm_id": "ZH05G27110",
+        "rap_id": "Os05g0528600",
+        "symbol": "OsYUC2"
+      },
+      {
+        "ricefm_id": "ZH01G34230",
+        "rap_id": "Os01g0732700",
+        "symbol": "OsYUC3"
+      },
+      {
+        "ricefm_id": "ZH01G09620",
+        "rap_id": "Os01g0224700",
+        "symbol": "OsYUC4"
+      },
+      {
+        "ricefm_id": "ZH12G17080",
+        "rap_id": "Os12g0512000",
+        "symbol": "OsYUC5"
+      },
+      {
+        "ricefm_id": "ZH07G13670",
+        "rap_id": "Os07g0437000",
+        "symbol": "OsYUC6"
+      },
+      {
+        "ricefm_id": "ZH04G01440",
+        "rap_id": "Os04g0128900",
+        "symbol": "OsYUC7"
+      },
+      {
+        "ricefm_id": "ZH03G05070",
+        "rap_id": "Os03g0162000",
+        "symbol": "OsYUC8"
+      },
+      {
+        "ricefm_id": "ZH01G13090",
+        "rap_id": "Os01g0273800",
+        "symbol": "OsYUC9"
+      },
+      {
+        "ricefm_id": "ZH01G13110",
+        "rap_id": "Os01g0274100",
+        "symbol": "OsYUC10"
+      },
+      {
+        "ricefm_id": "ZH12G06450",
+        "rap_id": "Os12g0189500",
+        "symbol": "OsYUC11"
+      },
+      {
+        "ricefm_id": "ZH02G13010",
+        "rap_id": "Os02g0272200",
+        "symbol": "OsYUC12"
+      },
+      {
+        "ricefm_id": "ZH11G07360",
+        "rap_id": "Os11g0207700",
+        "symbol": "OsYUC13"
+      },
+      {
+        "ricefm_id": "ZH12G02820",
+        "rap_id": "Os12g0133800",
+        "symbol": "OsPIN1d"
+      },
+      {
+        "ricefm_id": "ZH11G02760",
+        "rap_id": "Os11g0137000",
+        "symbol": "OsPIN1c/OsPIN1b"
+      },
+      {
+        "ricefm_id": "ZH09G16920",
+        "rap_id": "Os09g0505400",
+        "symbol": "OsPIN5c"
+      },
+      {
+        "ricefm_id": "ZH06G26740",
+        "rap_id": "Os06g0660200",
+        "symbol": "OsPIN2"
+      },
+      {
+        "ricefm_id": "ZH06G10140",
+        "rap_id": "Os06g0232300",
+        "symbol": "OsPIN1a/OsPIN1c"
+      },
+      {
+        "ricefm_id": "ZH05G31220",
+        "rap_id": "Os05g0576900",
+        "symbol": "OsPIN10b/OsPIN3b"
+      },
+      {
+        "ricefm_id": "ZH02G35800",
+        "rap_id": "Os02g0743400",
+        "symbol": "OsPIN1/REH1/OsPIN1b/OsPIN1a"
+      },
+      {
+        "ricefm_id": "ZH01G47380",
+        "rap_id": "Os01g0919800",
+        "symbol": "OsPIN5a"
+      },
+      {
+        "ricefm_id": "ZH01G32910",
+        "rap_id": "Os01g0715600",
+        "symbol": "OsPIN8"
+      },
+      {
+        "ricefm_id": "ZH01G27990",
+        "rap_id": "Os01g0643300",
+        "symbol": "OsPIN3t/OsPIN10a/OsPIN3a"
+      },
+      {
+        "ricefm_id": "ZH09G20640",
+        "rap_id": "Os09g0554300",
+        "symbol": "OsPILS7a/OsPINL2"
+      }
+    ]
+  },
+  "device": "npu:0",
+  "device_name": "Ascend910_9382",
+  "ricefm_checkpoint": "/opt/riceFM_save/eval-Nov05-18-46-2025/best_model.pt",
+  "ricefm_executed": true,
+  "cells": 64,
+  "input_genes": 25,
+  "embedding_shape": [
+    64,
+    256
+  ],
+  "finite": true,
+  "embedding_sha256": "7ed9edea5edfc2ea98dd5fa7443f900acf19946ab2222b2063cb170d599242ac",
+  "embedding_norm": {
+    "min": 14.823843002319336,
+    "mean": 14.902141571044922,
+    "max": 15.06727409362793
+  },
+  "timing_seconds": {
+    "model_load": 1.449781270697713,
+    "inference": 0.37128940038383007,
+    "cells_per_second": 172.3722786964517
+  },
+  "input_anchor_detection": {
+    "min": 2,
+    "max": 4,
+    "mean": 2.046875
+  },
+  "limitations": [
+    "25-gene compatibility pilot; not a whole-transcriptome mapping",
+    "cell embeddings are execution evidence, not validated cell-type predictions"
+  ]
+}

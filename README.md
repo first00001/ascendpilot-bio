@@ -43,7 +43,7 @@ python benchmark.py --mode chat --runs 10 --warmup 2 --max-new-tokens 128
 
 浏览器访问 `http://127.0.0.1:8000/demo`。公开数据读取和 cluster/marker 证据查询无需 Token；`/chat`、`/agent/run`、上传与报告生成接口仍需 `x-api-key` 或 Bearer Token。
 
-服务器可运行 `deliverables/deployment/deploy_and_verify.sh` 切换到公开真机模式。该模式以 `E-ENAD-52` 驱动 UMAP、cluster 和 marker 证据，Qwen3.5-4B 在 Ascend `npu:0` 实时生成报告。由于公开数据使用 `Os...` 基因编号、现有 riceFM checkpoint 使用 `ZH...` 编号，且没有经过验证的一对一映射，公开模式会明确返回 `ricefm_executed: false`，不会用私有 ZH11 参考或伪装成 riceFM 推理。
+服务器可运行 `deliverables/deployment/deploy_and_verify.sh` 切换到公开真机模式。该模式以 `E-ENAD-52` 驱动 UMAP、cluster 和 marker 证据，Qwen3.5-4B 在 Ascend `npu:0` 实时生成报告；riceFM 使用公开 `GSE232863/GSM8865415` 的 25 基因验证锚点子集，在 `npu:1` 实时生成 256 维 embedding。该 pilot 不是全转录组映射，也没有经过验证的细胞类型分类头，因此页面不会把 embedding 说成细胞类型预测。
 
 ### 无 NPU 环境的一键审查
 
@@ -65,7 +65,7 @@ bash deliverables/run_offline_demo.sh
 - `deliverables/qwen35-mindspeed-training/`：官方赛题主 Skill，包含双卡训练启动和 AscendC/Triton 日志对齐。
 - `deliverables/plantcell-skill/`：标准 Skill、API 文档、JSON Schema、安装/启停/状态/健康检查/演示脚本。
 - `deliverables/public-rice-root-skill/`：无需私有数据和模型权重即可运行的公开根尖 cluster/marker 证据 Skill。
-- `deliverables/public_data/`：从 EMBL-EBI `E-ENAD-52` / NCBI `GSE146035` 官方接口生成的公开审查子集、来源和哈希。
+- `deliverables/public_data/`：公开 `E-ENAD-52` 审查子集，以及 `GSE232863` 的 riceFM 25 基因锚点输入、来源和哈希。
 - `deliverables/skill/`：Qwen Agent 与 riceFM 适配器实现。
 - `deliverables/deployment/`：Qwen 服务端、部署脚本和性能升级脚本。
 - `deliverables/scripts/`：ZH11 构建、精度评测、性能压测、Agent 验收和环境检查脚本。
@@ -88,7 +88,7 @@ Qwen 在线平均 3.226 s，P95 3.247 s，19.86 tok/s，错误率 0；riceFM 热
 
 在线 Ascend 扩展实验使用的私有 ZH11 表达矩阵来自公司集群。未经数据所有者书面授权，不得将其原始矩阵、逐细胞预测或 embedding 上传到竞赛平台或公开仓库。
 
-面向评委的可运行审查系统已改用公开的水稻根尖单细胞数据 `E-ENAD-52` / `GSE146035`。Atlas 页面报告 28,857 个实验细胞，所选 28-cluster UMAP 接口覆盖 28,856 个已分群细胞；仓库内包含其中 1,120 个分层抽样 UMAP 点、cluster 规模和 marker 证据，以及可从 EMBL-EBI 官方 API 重建该子集的脚本。Atlas cluster 编号不是人工校订的生物学细胞类型。
+面向评委的可运行审查系统已改用公开水稻单细胞数据。`E-ENAD-52` / `GSE146035` 提供 UMAP、cluster 和 marker 证据；`GSE232863` / `GSM8865415` 提供 17,133 个细胞的公开表达矩阵，其中 64 个真实细胞和 25 个经 riceFM 官方教程与 Oryzabase 交叉核验的基因锚点随仓库提供。Atlas cluster 编号不是人工校订的生物学细胞类型，riceFM pilot embedding 也不是细胞类型预测。
 
 ## PR 链接
 

@@ -92,6 +92,26 @@ class StaticContractTests(unittest.TestCase):
         self.assertGreaterEqual(len(public["points"]), 1000)
         self.assertIn("not curated", public["dataset"]["notice"])
 
+    def test_ricefm_public_pilot_is_bounded_and_reproducible(self):
+        pilot = json.loads(
+            (ROOT / "public_data/gse232863_ricefm_anchor_pilot.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        result = json.loads(
+            (
+                ROOT
+                / "results/ricefm-public-pilot/gse232863_ricefm_anchor_pilot_result.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual("GSE232863", pilot["source"]["geo_accession"])
+        self.assertEqual(25, len(pilot["genes"]))
+        self.assertEqual(64, len(pilot["cells"]))
+        self.assertFalse(pilot["mapping"]["full_genome_mapping"])
+        self.assertTrue(result["ricefm_executed"])
+        self.assertEqual([64, 256], result["embedding_shape"])
+        self.assertTrue(result["finite"])
+
     def test_public_skill_is_independently_runnable(self):
         skill = (ROOT / "public-rice-root-skill/SKILL.md").read_text(
             encoding="utf-8"
@@ -113,7 +133,8 @@ class StaticContractTests(unittest.TestCase):
         source = (ROOT / "deployment/qwen35_server.py").read_text(encoding="utf-8")
         self.assertIn("Never invent", source)
         self.assertIn("public_atlas_evidence", source)
-        self.assertIn("riceFM is not executed", source)
+        self.assertIn("25-gene", source)
+        self.assertIn("classification_head", source)
         self.assertIn("missing_execution_citation", source)
         self.assertIn("generation_budget", source)
         self.assertIn('Literal["auto", "fixed"]', source)

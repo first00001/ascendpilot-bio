@@ -32,21 +32,21 @@
 
 打开 `http://127.0.0.1:8000/demo`。普通电脑离线运行时确认顶部显示“公开数据证据模式”；连接 Ascend 服务时确认显示“公开数据 + Ascend NPU”。依次完成：
 
-1. 公开模式：在 E-ENAD-52 UMAP 上悬停一个真实公开细胞，展示 Atlas cluster；强调 cluster 编号不是人工细胞类型。
-2. 公开模式：选择一个公开细胞并点击“查看 cluster 证据”，展示 EMBL-EBI marker genes；说明未执行 riceFM。
+1. 两种模式都可在 E-ENAD-52 UMAP 上悬停真实公开细胞，展示 Atlas cluster；强调 cluster 编号不是人工细胞类型。
+2. 普通电脑离线模式点击“查看 cluster 证据”展示官方 marker；Ascend 真机模式选择一个 `GSE232863` 公开细胞并点击“运行 riceFM embedding”，展示 256 维输出哈希、norm、NPU 设备和耗时。
 3. Ascend 真机模式：输入 API Token 后点击“生成分析”，展示 Qwen3.5-4B 在 `npu:0` 上的实时生成耗时和 tokens/s。
-4. 展示 Agent 的 `[E1]` 数据集、`[E2]` marker、`[E3]` 执行边界引用。明确 riceFM 未执行，因为 E-ENAD-52 的 `Os...` 与 checkpoint 的 `ZH...` 基因编号尚无经过验证的映射。
+4. 展示 Agent 的 `[E1]` 数据集、`[E2]` marker、`[E3]` 执行边界引用。明确 riceFM 仅执行 `GSE232863` 的 25 基因锚点 compatibility pilot，不是全转录组映射或细胞类型分类。
 
 这一段只演示一次注释和一次问答，不在现场跑多轮 benchmark。
 
 ## 4:20-5:00 总结和边界
 
-总结三点：官方 0.8B 双 NPU 训练完成；DCP/Gloo 修复形成上游 PR；扩展场景验证了迁移、部署和证据约束闭环。公开演示使用 E-ENAD-52/GSE146035，私有 ZH11 原始数据仍受授权限制；仓库不包含私有原始矩阵、逐细胞预测、模型权重或 checkpoint 分片。
+总结三点：官方 0.8B 双 NPU 训练完成；DCP/Gloo 修复形成上游 PR；扩展场景验证了迁移、部署和证据约束闭环。公开演示使用 E-ENAD-52/GSE146035 与 GSE232863/GSM8865415，私有 ZH11 原始数据仍受授权限制；仓库不包含私有原始矩阵、逐细胞预测、模型权重或 checkpoint 分片。
 
 ## 现场准备
 
 - 提前开启 SSH 隧道并访问 `/health`、`/version` 和 `/demo`。
-- 确认 `/health` 返回 `mode=public-evidence`、`qwen_device=npu:0`，并确认 `ricefm_runtime=disabled-no-validated-public-gene-map`。
+- 确认 `/health` 返回 `mode=public-evidence`、`qwen_device=npu:0`、`ricefm_device=npu:1`，并确认 `ricefm_runtime=public-anchor-pilot-ready`。
 - API Token 只在本机输入，不出现在幻灯片、终端历史或录屏中。
 - 提前打开 README、PR #8、两份比较 JSON、两份日志末尾和演示页面，按顺序放在浏览器标签页中。
 - 关闭聊天软件通知，终端字体调大，浏览器缩放保持 100%。

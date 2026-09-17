@@ -8,7 +8,10 @@ RICEFM_REPO=${RICEFM_REPO:-/opt/riceFM}
 RICEFM_MODEL=${RICEFM_MODEL:-/opt/riceFM_save/eval-Nov05-18-46-2025}
 
 for path in "$QWEN_MODEL/config.json" "$RICEFM_REPO" "$RICEFM_MODEL/args.json" \
-  "$RICEFM_MODEL/best_model.pt" "$RICEFM_MODEL/vocab.json"; do
+  "$RICEFM_MODEL/best_model.pt" "$RICEFM_MODEL/vocab.json" \
+  "$SOURCE/public_data/e_enad_52_review_subset.json" \
+  "$SOURCE/public_data/gse232863_ricefm_anchor_pilot.json" \
+  "$SOURCE/results/ricefm-public-pilot/gse232863_ricefm_anchor_pilot_result.json"; do
   [[ -e "$path" ]] || { echo "missing required artifact: $path" >&2; exit 2; }
 done
 $PYTHON - <<'PY'
@@ -16,12 +19,16 @@ import fastapi, numpy, pydantic, torch, torch_npu, transformers, uvicorn
 print("Python dependencies OK")
 PY
 
-install -d -m 0755 /opt/plantcell/{skill,data/ZH11_riceFM_eval,results/zh11,results/migration,demo} /var/log/qwen35
+install -d -m 0755 /opt/plantcell/{skill,data/E-ENAD-52,data/ricefm-public-candidate,results/migration,demo} /var/log/qwen35
 install -m 0644 "$SOURCE/deployment/qwen35_server.py" /opt/qwen35_server.py
 install -m 0644 "$SOURCE/skill/plantcell_skill.py" "$SOURCE/skill/ricefm_adapter.py" /opt/plantcell/skill/
 install -m 0644 "$SOURCE/demo/index.html" /opt/plantcell/demo/index.html
-cp -a "$SOURCE/data/ZH11_riceFM_eval/." /opt/plantcell/data/ZH11_riceFM_eval/
-cp -a "$SOURCE/results/zh11/." /opt/plantcell/results/zh11/
+install -m 0644 "$SOURCE/public_data/e_enad_52_review_subset.json" \
+  /opt/plantcell/data/E-ENAD-52/e_enad_52_review_subset.json
+install -m 0644 "$SOURCE/public_data/gse232863_ricefm_anchor_pilot.json" \
+  /opt/plantcell/data/ricefm-public-candidate/gse232863_ricefm_anchor_pilot.json
+install -m 0644 "$SOURCE/results/ricefm-public-pilot/gse232863_ricefm_anchor_pilot_result.json" \
+  /opt/plantcell/data/ricefm-public-candidate/gse232863_ricefm_anchor_pilot_result.json
 cp -a "$SOURCE/results/migration/." /opt/plantcell/results/migration/
 
 if [[ ! -s /etc/qwen35.env ]]; then

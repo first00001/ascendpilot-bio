@@ -78,7 +78,7 @@ def main() -> None:
                 args.api_token,
                 "/chat",
                 {
-                    "prompt": "用两点说明水稻单细胞标签迁移结果的可信度和限制。",
+                    "prompt": "用两点说明公开水稻单细胞证据和 riceFM embedding pilot 的用途与限制。",
                     "max_new_tokens": args.max_new_tokens,
                 },
             )

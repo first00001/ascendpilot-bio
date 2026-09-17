@@ -1,24 +1,33 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "RiceFM annotation response",
+  "title": "RiceFM public anchor embedding response",
   "type": "object",
-  "required": ["cells", "embedding_dimensions", "reference", "predictions"],
+  "required": ["ricefm_executed", "cells", "embedding_dimensions", "embedding_sha256", "embedding_norm", "performance", "classification_head", "reference", "mapping_scope"],
   "properties": {
+    "ricefm_executed": {"const": true},
     "cells": {"type": "integer"},
     "embedding_dimensions": {"const": 256},
-    "reference": {"const": "ZH11_riceFM_eval"},
-    "predictions": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["celltype_L1", "confidence", "neighbors"],
-        "properties": {
-          "celltype_L1": {"type": "string"},
-          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
-          "neighbors": {"type": "array"}
-        }
+    "embedding_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "embedding_norm": {
+      "type": "object",
+      "required": ["min", "mean", "max"],
+      "properties": {
+        "min": {"type": "number"},
+        "mean": {"type": "number"},
+        "max": {"type": "number"}
       }
-    }
+    },
+    "performance": {
+      "type": "object",
+      "required": ["seconds", "cells_per_second", "device"],
+      "properties": {
+        "seconds": {"type": "number", "minimum": 0},
+        "cells_per_second": {"type": "number", "minimum": 0},
+        "device": {"type": "string", "pattern": "^npu:[0-9]+$"}
+      }
+    },
+    "classification_head": {"const": false},
+    "reference": {"const": "GSE232863/GSM8865415"},
+    "mapping_scope": {"const": "25-gene validated anchor pilot"}
   }
 }
-

@@ -24,8 +24,8 @@ class PendingRiceFMAdapter:
             "dataset": dataset,
             "message": (
                 "未提供表达矩阵，因此没有对新细胞执行注释或差异分析。"
-                "已部署的 riceFM/ZH11 参考服务可通过 /ricefm/metrics 和 "
-                "/ricefm/annotate 调用。"
+                "已部署的公开数据 riceFM embedding pilot 可通过 /ricefm/metrics 和 "
+                "/ricefm/annotate 调用；它不输出细胞类型标签。"
             ),
         }
 

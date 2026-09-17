@@ -24,7 +24,7 @@ fi
 curl -fsS --max-time 300 \
   -H "x-api-key: $QWEN_API_TOKEN" \
   -H 'content-type: application/json' \
-  -d '{"prompt":"简要说明 E-ENAD-52 公开证据、Qwen 实时执行和 riceFM 未执行的边界。","max_new_tokens":96}' \
+  -d '{"prompt":"简要说明 E-ENAD-52 公开证据、Qwen 实时执行和 GSE232863 riceFM 25 基因 embedding pilot 的边界。","max_new_tokens":96}' \
   "$API/chat" | tee "/opt/plantcell/results/benchmarks/public-chat-smoke-$STAMP.json"
 echo
 

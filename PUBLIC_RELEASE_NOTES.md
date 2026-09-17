@@ -20,8 +20,8 @@ Local path defaults in scripts/configuration describe the verified target. Adapt
 
 ## Known Limitations
 
-- Raw company data, private expression demo samples and private per-cell derived outputs are excluded. Reviewers can run the checked-in `E-ENAD-52` / `GSE146035` evidence mode offline. On an authorized Ascend host with Qwen weights, `deliverables/deployment/qwen35_server.py` provides live Qwen/NPU report generation over the same public evidence. riceFM remains disabled in public mode because no validated `Os...` to checkpoint `ZH...` gene-ID mapping is available.
-- Public cluster evidence samples use the synthetic `ATLAS_CLUSTER_<id>` request contract only to select official marker evidence; they are not expression profiles and must not be described as riceFM inputs.
+- Raw company data, private expression demo samples and private per-cell derived outputs are excluded. Reviewers can run the checked-in `E-ENAD-52` / `GSE146035` evidence mode offline. On an authorized Ascend host with Qwen and riceFM weights, `deliverables/deployment/qwen35_server.py` provides live Qwen reporting and a real riceFM embedding pilot using 64 public `GSE232863/GSM8865415` cells and a validated 25-gene anchor subset. This is compatibility evidence, not a whole-transcriptome map or cell-type classifier.
+- Offline cluster evidence still uses a synthetic `ATLAS_CLUSTER_<id>` selector only to display official marker records. Live riceFM requests instead use the checked-in real `GSE232863` cells and must remain clearly separated from that offline evidence path.
 - The recorded DCP patch is preserved as measured evidence and validates synchronous save only. Its async CPU device_id change was not exercised and must not be advertised as async-save support.
 - DOCX files are updated but have not passed automatic visual rendering QA.
 - Project repository: `first00001/ascendpilot-bio`. MindSpeed-MM fix: upstream PR #8 from branch `qwen35-08b-ascendc-gloo`.

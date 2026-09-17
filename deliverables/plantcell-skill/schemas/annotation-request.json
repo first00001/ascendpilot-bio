@@ -5,14 +5,13 @@
   "required": ["genes", "counts"],
   "additionalProperties": false,
   "properties": {
-    "genes": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "genes": {"type": "array", "minItems": 1, "maxItems": 25, "uniqueItems": true, "items": {"type": "string", "pattern": "^ZH[0-9]{2}G[0-9]{5}$"}},
     "counts": {
       "type": "array",
       "minItems": 1,
-      "maxItems": 128,
+      "maxItems": 256,
       "items": {"type": "array", "items": {"type": "number", "minimum": 0}}
     },
     "k": {"type": "integer", "minimum": 1, "maximum": 25, "default": 5}
   }
 }
-

@@ -27,3 +27,17 @@ Sources:
 The generated JSON records the exact API endpoints and retrieval date used for
 provenance. Reviewers should use the upstream records for the authoritative
 metadata and terms of use.
+
+## riceFM public compatibility pilot
+
+`gse232863_ricefm_anchor_pilot.json` contains 64 real cells from public GEO
+sample `GSM8865415` (`GSE232863`, sample `E10_1`) and 25 gene anchors. The source
+HDF5 contains 17,133 cells and has SHA-256
+`e11a4890457c8537df73e2945c989b39749d4534fff6979c36147cb2c9e37a46`.
+
+The mapping uses riceFM official tutorial anchors cross-referenced to Oryzabase
+RAP IDs. It is intentionally limited to 25 genes and is not a whole-transcriptome
+mapping. The corresponding Ascend execution record is stored at
+`../results/ricefm-public-pilot/gse232863_ricefm_anchor_pilot_result.json`.
+It proves that riceFM generated finite 256-dimensional embeddings; it does not
+claim a validated cell-type prediction or classification head.
