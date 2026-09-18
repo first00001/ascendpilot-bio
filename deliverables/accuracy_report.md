@@ -4,6 +4,10 @@
 
 对双芯片 AscendC 与 Triton 正式 100-step 训练日志按相同步号解析。两次运行的 global batch size 均为 8；两条 loss 序列的平均绝对差为 0.000884，最大绝对差为 0.002954，第 100 step 绝对差为 0.000212；平均 loss 分别为 1.375924 与 1.375591。上述结果证明两条曲线高度接近，但最终“通过/不通过”必须依据赛事提供的精度阈值或验收脚本，当前文档不自行发明阈值。
 
+![Qwen3.5-0.8B AscendC 与 Triton Loss 精度对齐](results/qwen35-formal-dual/results/formal_dual_gloo_loss_alignment.png)
+
+上图由两份正式训练原始日志逐 step 生成。上半部分为 AscendC 与 Triton 的 loss 叠加曲线，下半部分为相同步号的绝对 loss 差值。制图脚本为 `scripts/plot_loss_alignment.py`，可由原始日志重新生成 SVG 和 PNG。
+
 ## 1. 测试目标
 
 验证 riceFM 预训练 checkpoint 对水稻单细胞表达谱的表征能力，以及基于 ZH11

@@ -1,8 +1,14 @@
-# README
+# AscendPilot-Bio
 
-## 项目
+面向昇腾环境的 Qwen3.5 训练迁移与科研场景验证项目。官方主线是将 Qwen3.5-0.8B 迁移至 MindSpeed-MM/FSDP，在双昇腾 910 上完成 AscendC 与 Triton 同条件训练、loss 对齐、性能比较和 Checkpoint 保存。Qwen3.5-4B Agent 与 riceFM 公开水稻单细胞分析作为扩展验证，不替代官方训练任务。
 
-AscendPilot-Bio：Qwen3.5-0.8B MindSpeed-MM/FSDP 训练迁移 Skill，附 Qwen3.5-4B Agent 与 riceFM/ZH11 创新验证场景。
+## 核心成果
+
+- 完成 AscendC、Triton 两组双芯片 100-step 正式训练，均保存第 100 step Checkpoint。
+- 完成逐 step loss 对齐：平均绝对差 0.000884，最大差 0.002954，第 100 step 差 0.000212。
+- 完成 DCP CPU/Gloo process group 兼容补丁，并提交 MindSpeed-MM PR。
+- 提供可复用的训练迁移 Skill、公开数据离线 Demo 和 Ascend 真机演示系统。
+- riceFM 在 `npu:1` 使用公开 `GSE232863` 的 25 基因锚点子集生成 256 维 embedding；Qwen3.5-4B 在 `npu:0` 生成带证据引用的分析报告。
 
 ## 环境版本
 
@@ -15,7 +21,25 @@ AscendPilot-Bio：Qwen3.5-0.8B MindSpeed-MM/FSDP 训练迁移 Skill，附 Qwen3.
 - Qwen：Qwen3.5-4B，运行于 `npu:0`
 - riceFM：用户 checkpoint，运行于 `npu:1`
 
-## 运行启动脚本
+## 最小可运行 Demo
+
+普通 Windows、Linux 或 macOS 电脑只需 Python 3，无需 NPU、模型权重或第三方 Python 包。
+
+Windows：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File deliverables\run_offline_demo.ps1
+```
+
+Linux/macOS：
+
+```bash
+bash deliverables/run_offline_demo.sh
+```
+
+浏览器访问 `http://127.0.0.1:8890/demo`。该模式展示 `E-ENAD-52/GSE146035` 的公开 UMAP、28 个无监督 cluster 和 marker 证据，并明确标注未执行 Qwen、riceFM 或 Ascend NPU 实时推理。
+
+## 官方训练运行
 
 官方训练主线：
 
@@ -29,35 +53,18 @@ python deliverables/scripts/compare_training_logs.py \
 
 AscendC 与 Triton 两次运行除算子实现外必须保持数据、随机种子、batch size、步数和训练超参数一致。
 
-扩展演示服务：
+## Ascend 真机演示
 
 目标机服务由 supervisor 管理，启动入口为 `/opt/start_qwen35.sh`，服务监听 `127.0.0.1:8000`，并启用 API Token、日志轮转、自动重启和 `/version`。
 
 ```bash
 ssh -N -L 8000:127.0.0.1:8000 \
   -J 'JUMP_USER:JUMP_TOKEN@JUMP_HOST:JUMP_PORT' root@TARGET_HOST
-export PLANTCELL_API_TOKEN='<与目标机 /etc/qwen35.env 相同的 Token>'
-python demo.py
-python benchmark.py --mode chat --runs 10 --warmup 2 --max-new-tokens 128
 ```
 
-浏览器通过 SSH 本地端口转发访问 `http://127.0.0.1:8000/demo` 时，服务会为本机连接签发短期 HttpOnly 演示会话，因此页面无需保存长期 Token。公开数据读取和 cluster/marker 证据查询无需 Token；页面之外的 `/chat`、`/agent/run`、上传与报告生成接口仍需 `x-api-key` 或 Bearer Token。
+浏览器通过 SSH 本地端口转发访问 `http://127.0.0.1:8000/demo`。服务为本机页面签发短期 HttpOnly 演示会话，无需在网页中填写或保存长期 Token。页面之外的受保护 API 仍需 `x-api-key` 或 Bearer Token。
 
 服务器可运行 `deliverables/deployment/deploy_and_verify.sh` 切换到公开真机模式。该模式以 `E-ENAD-52` 驱动 UMAP、cluster 和 marker 证据，Qwen3.5-4B 在 Ascend `npu:0` 实时生成报告；riceFM 使用公开 `GSE232863/GSM8865415` 的 25 基因验证锚点子集，在 `npu:1` 实时生成 256 维 embedding。该 pilot 不是全转录组映射，也没有经过验证的细胞类型分类头，因此页面不会把 embedding 说成细胞类型预测。
-
-### 无 NPU 环境的一键审查
-
-评委可在普通 Windows、Linux 或 macOS 电脑上使用 Python 3 直接启动离线证据演示，无需安装第三方依赖：
-
-```powershell
-./deliverables/run_offline_demo.ps1
-```
-
-```bash
-bash deliverables/run_offline_demo.sh
-```
-
-浏览器会打开 `http://127.0.0.1:8000/demo`。页面会明确显示“公开数据证据模式”：UMAP、28-cluster 分群和 marker genes 来自 EMBL-EBI `E-ENAD-52` / NCBI `GSE146035` 的公开水稻根尖单细胞数据；Atlas cluster 编号不是人工校订的细胞类型。性能和精度数字来自已保存的正式实验记录，该模式不会执行 Qwen、riceFM 或 Ascend NPU 实时推理。真实运行请使用上面的 Ascend 部署流程。
 
 ## 代码结构说明
 
@@ -68,27 +75,39 @@ bash deliverables/run_offline_demo.sh
 - `deliverables/public_data/`：公开 `E-ENAD-52` 审查子集，以及 `GSE232863` 的 riceFM 25 基因锚点输入、来源和哈希。
 - `deliverables/skill/`：Qwen Agent 与 riceFM 适配器实现。
 - `deliverables/deployment/`：Qwen 服务端、部署脚本和性能升级脚本。
-- `deliverables/scripts/`：ZH11 构建、精度评测、性能压测、Agent 验收和环境检查脚本。
+- `deliverables/scripts/`：训练日志比较、精度对齐制图、性能压测、Agent 验收和环境检查脚本。
 - `deliverables/demo/`：无额外前端依赖的评审演示页。
-- `deliverables/results/`：迁移报告、性能原始 JSON、npu-smi 快照、精度指标和逐细胞预测。
+- `deliverables/results/`：训练日志、对比 JSON、环境记录、公开 riceFM pilot 结果和精度对齐图。
 
 ## 代码逻辑
 
-请求先进入 Qwen JSON Planner，经过工具白名单过滤后调用 `validate_matrix`、`ricefm_annotate`、`zh11_metrics` 或 `qwen_report`。Evidence Store 保存 E0 计划、E1 注释和 E2 指标；Verifier 检查证据引用、未知证据 ID 和可疑基因符号，失败时自动重写一次。缺少 `genes/counts` 时返回 `input_required`，不会编造 marker、差异基因或通路结论。
+自然语言问题先进入 Qwen JSON Planner，计划经格式检查后只能调用 `public_atlas_evidence` 和 `qwen_report` 白名单工具；计划无效时采用确定性兜底方案。Evidence Store 汇总计划、公开数据、marker 证据和执行边界，Verifier 检查证据编号及无依据内容，必要时触发一次自动修正。riceFM embedding 由独立接口执行，不被表述为细胞类型预测。
 
 ## 官方训练实测结果
 
 双芯片正式 A/B 两份日志各完成 100 step，global batch size 均为 8。按 step 1-100 同口径统计：AscendC 2.716775 samples/s，Triton 2.341653 samples/s，AscendC 全流程吞吐提升 16.02%；逐 step loss 平均绝对差 0.000884，最大 0.002954，第 100 step 差 0.000212。step 11-100 稳态窗口中 AscendC 为 4.036069 samples/s、Triton 为 6.898838 samples/s，AscendC 低 41.50%，因此不能把全流程收益外推为普遍加速。最终精度通过标准以赛事验收脚本为准。
 
+![Qwen3.5-0.8B AscendC 与 Triton Loss 精度对齐](deliverables/results/qwen35-formal-dual/results/formal_dual_gloo_loss_alignment.png)
+
 ## 扩展场景实测结果
 
-Qwen 在线平均 3.226 s，P95 3.247 s，19.86 tok/s，错误率 0；riceFM 热态单细胞接口平均 9.55 ms，P95 9.98 ms，错误率 0；ZH11 5,188 细胞批量推理耗时 25.1301 s，吞吐 206.45 cells/s。Qwen FP16 峰值显存 8.60 GB，相比 FP32 的 16.91 GB 下降 49.14%，但本次短文本吞吐低 11.77%，因此仅作为显存和双模型驻留优化。Agent 真机固定任务 5/5 通过，完成率 100%。
+公开 riceFM 兼容性测试使用 64 个真实细胞和 25 个经核验的基因锚点，在 Ascend `npu:1` 生成 `[64, 256]` embedding；全部输出为有限值，平均 L2 范数为 14.9021，模型加载后的批量推理吞吐为 172.37 cells/s。由于 checkpoint 没有面向该公开数据集的分类头，本测试不计算 Accuracy、Macro-F1 或 Weighted-F1。
+
+已保存的 Qwen FP32/FP16 对照显示，FP16 峰值分配显存由 16.91 GB 降至 8.60 GB，下降 49.14%；加载时间下降 43.83%，但短文本吞吐下降 11.77%。因此 FP16 的主要收益是降低显存占用并支持双模型驻留，而非生成加速。
 
 ## 数据说明
 
-在线 Ascend 扩展实验使用的私有 ZH11 表达矩阵来自公司集群。未经数据所有者书面授权，不得将其原始矩阵、逐细胞预测或 embedding 上传到竞赛平台或公开仓库。
-
 面向评委的可运行审查系统已改用公开水稻单细胞数据。`E-ENAD-52` / `GSE146035` 提供 UMAP、cluster 和 marker 证据；`GSE232863` / `GSM8865415` 提供 17,133 个细胞的公开表达矩阵，其中 64 个真实细胞和 25 个经 riceFM 官方教程与 Oryzabase 交叉核验的基因锚点随仓库提供。Atlas cluster 编号不是人工校订的生物学细胞类型，riceFM pilot embedding 也不是细胞类型预测。
+
+公开提交不包含私有 ZH11 原始表达矩阵、逐细胞结果、模型权重或 Checkpoint 分片。公开 riceFM 结果仅为 25 基因锚点兼容性 pilot，不代表全转录组适配、独立生物学验证或细胞类型分类能力。
+
+## 演示与报告
+
+- 最小可运行 Demo：`deliverables/run_offline_demo.ps1` 或 `deliverables/run_offline_demo.sh`
+- 5 分钟演示流程：`deliverables/DEMO_GUIDE.md`
+- 演示系统上交说明：`deliverables/DEMO_SUBMISSION.md`
+- 精度分析报告：`deliverables/accuracy_report.md`
+- 性能分析报告：`deliverables/performance_analysis_report.md`
 
 ## PR 链接
 
